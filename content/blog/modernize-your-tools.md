@@ -9,17 +9,17 @@ A replacement for ls which features better defaults and more features.
 
 [github.com/ogham/exa](https://github.com/ogham/exa)
 
-![exa example](/static/img/exa_preview.png)
+![exa example](/img/exa_preview.png)
 
 ## bat, a cat(1) clone with wings.
 
 Bat supports syntax highlighting, git integration, paging and more.
 
-![](/static/img/bat_cmd_example.png)
+![](/img/bat_cmd_example.png)
 
 If you use (neo)vim with fzf.vim and have ripgrep and bat installed your search will have a preview window with highlighted code:
 
-![](/static/img/vim_bat_preview.png)
+![](/img/vim_bat_preview.png)
 
 ## fd, a simple, fast and user-friendly alternative to find
 

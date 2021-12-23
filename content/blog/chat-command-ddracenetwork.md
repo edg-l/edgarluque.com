@@ -161,7 +161,7 @@ We format our message with `str_format` and send it with the method `SendChatTar
 
 And we can test it in the game:
 
-![The result](/static/img/ddnet_chat_cmd.png)
+![The result](/img/ddnet_chat_cmd.png)
 
 ## More to come
 - Implementing a rcon command
