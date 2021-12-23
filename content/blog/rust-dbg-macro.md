@@ -43,4 +43,4 @@ Using this macro without any argument will print the current file and line numbe
 One thing to be aware is that this macro moves the input, in cases where this is a problem it's useful to borrow.
 
 Sources:
-- https://doc.rust-lang.org/std/macro.dbg.html
+- <https://doc.rust-lang.org/std/macro.dbg.html>
