@@ -1,0 +1,158 @@
+/*
+  1. Use a more-intuitive box-sizing model.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-size: 16px;
+
+  @media screen and (max-width: 500px) {
+    font-size: 12px;
+  }
+
+  @media screen and (max-width: 800px) {
+    font-size: 14px;
+  }
+}
+/*
+    2. Remove default margin
+  */
+* {
+  margin: 0;
+}
+/*
+    3. Allow percentage-based heights in the application
+  */
+html,
+body {
+  height: 100%;
+  font-family: monospace;
+}
+/*
+    Typographic tweaks!
+    4. Add accessible line-height
+    5. Improve text rendering
+  */
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+/*
+    6. Improve media defaults
+  */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+/*
+    7. Remove built-in form typography styles
+  */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+/*
+    8. Avoid text overflows
+  */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+/*
+    9. Create a root stacking context
+  */
+#root,
+#__next {
+  isolation: isolate;
+}
+
+$breakpoint: 900px;
+
+.title {
+  font-size: 2em;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.6em;
+}
+
+h2 {
+  font-size: 1.4em;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+h1,
+h2,
+h3 {
+  text-transform: uppercase;
+}
+
+p {
+  text-align: justify;
+  margin: 1em 0;
+}
+
+a {
+  color: black;
+  font-weight: bold;
+}
+
+pre {
+  padding: 10px;
+  overflow-x: auto;
+  border: 1px solid black;
+  margin: 1em 0;
+}
+
+blockquote {
+  border: 1px gray dashed;
+  padding: 5px 10px;
+}
+
+.container {
+  margin: 10px auto;
+  margin-top: 0;
+  padding-top: 10px;
+  max-width: $breakpoint;
+  @media screen and (max-width: $breakpoint) {
+    max-width: 100%;
+    margin: 10px 10px;
+  }
+}
+
+ul.nav {
+  text-align: right;
+  text-transform: uppercase;
+  li {
+    display: inline;
+    padding: 0 5px;
+  }
+}
+
+.brand-title {
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  font-weight: bolder;
+  text-align: right;
+  margin: 0;
+}
+
+.blog-date {
+  text-align: right;
+}
