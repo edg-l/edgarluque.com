@@ -11,8 +11,8 @@
 <div class="posts">
   {% for page in section.pages %}
       <article class="post">
-          <span>{{ page.date }}: </span>
-          <a href="{{ page.permalink }}" >{{ page.title }}</a>
+          <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
+          <a href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
       </article>
   {% endfor %}
 </div>
