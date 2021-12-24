@@ -8,14 +8,16 @@
 {% set section = get_section(path="blog/_index.md") %}
 <h2>Articles</h2>
 <ul class="posts">
-{% for page in section.pages %}
-<li>
-  <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
-  <a href="{{ page.permalink }}" title="{{ page.description }}"
-    >{{ page.title }}</a
-  >
-</li>
-{% endfor %}
+  {% for page in section.pages %}
+  <li>
+    <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
+    <a href="{{ page.permalink }}" title="{{ page.description }}"
+      >{{ page.title }}</a>
+      | {% for category in page.taxonomies["categories"] %}
+      <a class="category-link capitalize" href="/categories/{{category}}">{{ category }}</a>
+      {% endfor %}
+  </li>
+  {% endfor %}
 </ul>
 
 {% endblock content %}
