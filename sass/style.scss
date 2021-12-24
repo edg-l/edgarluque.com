@@ -113,10 +113,18 @@ pre {
   border: 1px solid black;
   margin: 1em 0;
   font-family: "JetBrains Mono", monospace;
+
+  code {
+    background-color: inherit;
+    color: inherit;
+    border: 0;
+  }
 }
 
 code {
   font-family: "JetBrains Mono", monospace;
+  padding: 2px;
+  border: 1px gray solid;
 }
 
 blockquote {
