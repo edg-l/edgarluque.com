@@ -1,20 +1,21 @@
-{% extends "base.html" %}
-
-{% block content %}
-<h1 class="title">
-  Welcome to my website
-</h1>
-<p>This is my personal website, where I post articles and other stuff, usually about coding, ideas or anything related to the tech world.</p>
+{% extends "base.html" %} {% block content %}
+<h1 class="title">Welcome to my website</h1>
+<p>
+  This is my personal website, where I post articles and other stuff, usually
+  about coding, ideas or anything related to the tech world.
+</p>
 
 {% set section = get_section(path="blog/_index.md") %}
 <h2>Articles</h2>
-<div class="posts">
-  {% for page in section.pages %}
-      <article class="post">
-          <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
-          <a href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
-      </article>
-  {% endfor %}
-</div>
+<ul class="posts">
+{% for page in section.pages %}
+<li>
+  <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
+  <a href="{{ page.permalink }}" title="{{ page.description }}"
+    >{{ page.title }}</a
+  >
+</li>
+{% endfor %}
+</ul>
 
 {% endblock content %}
