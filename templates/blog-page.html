@@ -16,7 +16,12 @@
 <h1 class="title">
   {{ page.title }}
 </h1>
+
 <p class="blog-date"><strong><time datetime="{{ page.date }}">{{ page.date }}</time></strong></p>
+<p class="blog-date">
+{% for category in page.taxonomies["categories"] %}
+<a class="category-link capitalize" href="/categories/{{category}}">{{ category }}</a>
+{% endfor %}</p>
 {{ page.content | safe }}
 </article>
 {% endblock content %}
