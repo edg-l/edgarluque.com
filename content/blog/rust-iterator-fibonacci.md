@@ -59,7 +59,7 @@ impl Iterator for Fibonacci {
 }
 ```
 
-Since fibonacci series are infinite, we always return Some(), but if you implement a non-infinite iterator you will have to return None at some point.
+Since fibonacci series are infinite, we always return `Some()`, but if you implement a non-infinite iterator you will have to return None at some point.
 
 And then to see how it works:
 
