@@ -2,6 +2,8 @@
 title = "Code conventions in DDraceNetwork"
 description = "The code conventions enforced by DDraceNetwork."
 date = 2020-11-28
+[taxonomies]
+categories = ["DDraceNetwork", "cpp"]
 +++
 
 This is the part 2 of my series of articles about coding in DDraceNetwork, you can find the previous one [here](/blog/intro-to-ddnet).

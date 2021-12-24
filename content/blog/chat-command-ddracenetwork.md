@@ -2,6 +2,8 @@
 title = "Implementing a chat command in DDraceNetwork"
 description = "A chat command that shows info about our player"
 date = 2020-12-04
+[taxonomies]
+categories = ["DDraceNetwork", "cpp"]
 +++
 
 This is the part 3 of my series of articles about coding in DDraceNetwork, you can find the first article [here](/blog/intro-to-ddnet).

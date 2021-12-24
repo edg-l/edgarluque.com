@@ -2,6 +2,8 @@
 title = "Setting Up SDL2 with CMake"
 description = "How to setup and use SDL2 using the CMake build tool."
 date = 2019-04-27
+[taxonomies]
+categories = ["cmake", "sdl2"]
 +++
 
 ## Installing CMake

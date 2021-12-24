@@ -2,6 +2,8 @@
 title = "What's new in Python 3.9"
 description = "A list of major new features in python 3.9"
 date = 2020-11-10
+[taxonomies]
+categories = ["python"]
 +++
 
 ## Python 3.9

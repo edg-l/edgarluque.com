@@ -1,0 +1,16 @@
+{% extends "base.html" %} {% block content %}
+
+<h1 class="capitalize">{{ term.name }} articles</h1>
+
+<ul class="posts">
+  {% for page in term.pages %}
+  <li>
+    <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
+    <a href="{{ page.permalink }}" title="{{ page.description }}"
+      >{{ page.title }}</a
+    >
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock content %}

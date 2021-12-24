@@ -2,6 +2,8 @@
 title = "An intro to the DDraceNetwork game source code"
 description = "An introduction to the ddnet source code."
 date = 2020-11-03
+[taxonomies]
+categories = ["DDraceNetwork", "cpp"]
 +++
 
 ## What is DDraceNetwork?

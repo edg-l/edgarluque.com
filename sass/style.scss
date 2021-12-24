@@ -150,6 +150,17 @@ ul.posts {
   margin: 0;
 }
 
+ul.categories {
+  columns: 4;
+  @media screen and (max-width: 600px) {
+    columns: 2;
+  }
+}
+
+a.title {
+  text-decoration: none;
+}
+
 .brand-title {
   font-size: 1.4rem;
   text-transform: uppercase;
@@ -160,4 +171,8 @@ ul.posts {
 
 .blog-date {
   text-align: right;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }

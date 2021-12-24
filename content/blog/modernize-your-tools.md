@@ -2,6 +2,8 @@
 title = "Modernize your linux workflow with Rust"
 description = "Various tools and software that will modernize your workflow"
 date = 2020-11-06
+[taxonomies]
+categories = ["rust", "tools"]
 +++
 
 ## exa, a replacement for 'ls'

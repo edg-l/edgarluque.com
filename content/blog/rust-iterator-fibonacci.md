@@ -2,6 +2,8 @@
 title = "Rust Iterators: Fibonacci series"
 description = "Implementing an iterator that generates fibonacci numbers."
 date = 2020-12-01
+[taxonomies]
+categories = ["rust"]
 +++
 
 In this article we will implement an iterator that generates Fibonacci numbers, 

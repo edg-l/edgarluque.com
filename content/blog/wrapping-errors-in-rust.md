@@ -2,6 +2,8 @@
 title = "Wrapping errors in Rust"
 description = "Wrap internal and external errors with your own error type."
 date = 2021-01-24
+[taxonomies]
+categories = ["rust"]
 +++
 
 While I was developing a rust crate ([paypal-rs](https://github.com/edg-l/paypal-rs)) I noticed my error handling was pretty bad.

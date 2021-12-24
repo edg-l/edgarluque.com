@@ -2,6 +2,8 @@
 title = "An intro to MiniUPNP"
 description = "An intro to the MiniUPNP C library."
 date = 2020-04-14
+[taxonomies]
+categories = ["c"]
 +++
 
 If you have a software that requires port forwarding, you may want to implement UPnP to make things easy for your end users.

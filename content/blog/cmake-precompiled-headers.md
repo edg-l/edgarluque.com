@@ -2,6 +2,8 @@
 title = "Creating precompiled headers with cmake"
 description = "A brief introduction to target_precompile_headers"
 date = 2020-11-12
+[taxonomies]
+categories = ["cmake"]
 +++
 
 ## What are precompiled headers?
