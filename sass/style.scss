@@ -99,6 +99,7 @@ h3 {
 
 p {
   text-align: justify;
+  text-justify: inter-word;
   margin: 1em 0;
 }
 
@@ -124,6 +125,7 @@ pre {
 code {
   font-family: "JetBrains Mono", monospace;
   padding: 2px;
+  line-height: 1.8;
   border: 1px gray solid;
 }
 
