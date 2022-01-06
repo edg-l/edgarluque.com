@@ -70,7 +70,7 @@ let mut archive = tar::Archive::new(decoder);
 
 // Loop over the entries
 for entry in archive.entries()? {
-    let entry = e.unwrap();
+    let entry = entry.unwrap();
     let path = entry.path().unwrap();
     let filename = path.file_name().expect("exist");
     // process each entry
