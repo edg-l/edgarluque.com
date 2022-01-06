@@ -29,19 +29,10 @@ We will use the following libraries to achieve this:
   
 ## Fetching the data
 
+With ureq we can fetch the data easily:
+
 ```rust
 let resp = ureq::get("https://ddnet.tw/stats/master/2022-01-04.tar.zstd").call()?;
-
-// Read the content length from the header.
-let len: usize = resp.header("Content-Length").unwrap().parse()?;
-
-// Initialize the vector with the given length capacity.
-let mut bytes_compressed: Vec<u8> = Vec::with_capacity(len);
-
-// Read everything.
-resp.into_reader()
-    .take(15 * 1024 * 1024) // read max 15mb
-    .read_to_end(&mut bytes_compressed)?;
 ```
 
 ## Processing the data
@@ -49,18 +40,11 @@ resp.into_reader()
 In Rust i/o operations are modeled around 2 traits: [Read](https://doc.rust-lang.org/std/io/trait.Read.html) and [Write](https://doc.rust-lang.org/std/io/trait.Write.html),
 thanks to this it's really ergonomic to use both libraries (tar and zstd) together.
 
-First, since `Vec` doesn't implement Read we need to wrap it around a [Cursor](https://doc.rust-lang.org/std/io/struct.Cursor.html) which implements [Read](https://doc.rust-lang.org/std/io/trait.Read.html).
-
-```rust
-let buffer = Cursor::new(bytes_compressed);
-```
-
-Good, now we can pass this buffer to the zstd [Decoder](https://docs.rs/zstd/0.9.0+zstd.1.5.0/zstd/stream/read/struct.Decoder.html), which takes anything that implements [Read](https://doc.rust-lang.org/std/io/trait.Read.html),
+Now we convert the response into a Reader and pass it to the zstd [Decoder](https://docs.rs/zstd/0.9.0+zstd.1.5.0/zstd/stream/read/struct.Decoder.html), which takes anything that implements [Read](https://doc.rust-lang.org/std/io/trait.Read.html),
 it also wraps it around a [BufReader](https://doc.rust-lang.org/nightly/std/io/struct.BufReader.html) for buffered reading.
 
 ```rust
-// The type of decoder is Decoder<BufReader<Cursor<Vec<u8>>>>
-let decoder = zstd::stream::Decoder::new(buffer)?;
+let decoder = zstd::stream::Decoder::new(resp.into_reader())?;
 ```
 
 Now we need to pass this `decoder` to tar to get its entries:
@@ -94,3 +78,6 @@ Here is the source code of the tool: <https://github.com/edg-l/teemasterparser>
 And an image of the result:
 
 <img src="https://github.com/edg-l/teemasterparser/raw/master/example.svg" width="100%">
+
+
+[Discussion on reddit.](https://www.reddit.com/r/rust/comments/rxav4e/parsing_compressed_files_efficiently_with_rust/)
