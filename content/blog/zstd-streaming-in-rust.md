@@ -6,7 +6,7 @@ date = 2022-01-06
 categories = ["rust"]
 +++
 
-I recently wanted to create a tool to create plots showing concurrent players each day on [DDraceNetwork](https://ddnet.tw/) (DDNet for short).
+I recently wanted to create a tool to create plots showing concurrent players each day on the open-source game [DDraceNetwork](https://ddnet.tw/) (DDNet for short).
 
 DDNet hosts an HTTP "master server", which is what the game client uses to fetch information about game servers they can join.
 Thankfully they keep online the master server status of [previous days](https://ddnet.tw/stats/master/).
