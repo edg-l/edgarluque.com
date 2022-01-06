@@ -11,7 +11,7 @@ I recently wanted to create a tool to create plots showing concurrent players ea
 DDNet hosts an HTTP "master server", which is what the game client uses to fetch information about game servers they can join.
 Thankfully they keep online the master server status of [previous days](https://ddnet.tw/stats/master/).
 
-Each .tar.zstd file contains one JSON file every 5 seconds which has information about all servers and players within those servers at that current time.
+Each `.tar.zstd` file contains a JSON file every 5 seconds starting from 00:00 to 23:59 which has information about all servers and players within those servers at that current time.
 
 ## The problem
 
