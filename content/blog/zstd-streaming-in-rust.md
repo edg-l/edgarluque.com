@@ -30,7 +30,7 @@ We will use the following libraries to achieve this:
 ## Fetching the data
 
 ```rust
-let resp = ureq::get("https://ddnet.tw/stats/master/2022-01-05.tar.zstd").call()?;
+let resp = ureq::get("https://ddnet.tw/stats/master/2022-01-04.tar.zstd").call()?;
 
 // Read the content length from the header.
 let len: usize = resp.header("Content-Length").unwrap().parse()?;
@@ -87,3 +87,11 @@ let data: ServerList = simd_json::from_reader(entry).expect("parse json");
 This way, we are parsing each file efficiently while using almost no RAM thanks to the streaming nature of these operations.
 
 This all fits really well thanks to the design of [Read](https://doc.rust-lang.org/std/io/trait.Read.html) and [Write](https://doc.rust-lang.org/std/io/trait.Write.html).
+
+## The tool
+
+Here is the source code of the tool: <https://github.com/edg-l/teemasterparser>
+
+And an image of the result:
+
+<img src="https://github.com/edg-l/teemasterparser/raw/master/example.svg" width="100%">
