@@ -1,9 +1,13 @@
+$color: #E6E1CF;
+$bgcolor: #14191F;
+
 /*
   1. Use a more-intuitive box-sizing model.
 */
 *,
 *::before,
 *::after {
+  font-variant-ligatures: none;
   box-sizing: border-box;
   font-size: 16px;
 
@@ -28,6 +32,8 @@ html,
 body {
   height: 100%;
   font-family: "JetBrains Mono", monospace;
+  background-color: $bgcolor;
+  color: $color;
 }
 /*
     Typographic tweaks!
@@ -104,14 +110,14 @@ p {
 }
 
 a {
-  color: black;
+  color: $color;
   font-weight: bold;
 }
 
 pre {
   padding: 10px;
   overflow-x: auto;
-  border: 1px solid black;
+  border: 1px solid $color;
   margin: 1em 0;
   font-family: "JetBrains Mono", monospace;
 
@@ -126,11 +132,11 @@ code {
   font-family: "JetBrains Mono", monospace;
   padding: 2px;
   line-height: 1.8;
-  border: 1px gray solid;
+  border: 1px $color solid;
 }
 
 blockquote {
-  border: 1px gray dashed;
+  border: 1px $color dashed;
   padding: 5px 10px;
 }
 
@@ -188,5 +194,5 @@ a.title {
 }
 
 .category-link {
-  color: gray;
+  color: $color;
 }
