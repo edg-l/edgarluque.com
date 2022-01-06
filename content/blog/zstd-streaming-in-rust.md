@@ -17,7 +17,7 @@ Each `.tar.zstd` file contains a JSON file every 5 seconds starting from 00:00 t
 
 These files, while compressed use only about ~8mb, but they are very efficiently compressed, when decompressed they take about 7gb.
 
-So if we don't want to use a lot of disk space or RAM we need to parse the data in a streaming way.
+So if we don't want to use a lot of disk space or memory we need to parse the data in a streaming way.
 
 ## The libraries
 
