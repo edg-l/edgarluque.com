@@ -56,7 +56,7 @@ let buffer = Cursor::new(bytes_compressed);
 ```
 
 Good, now we can pass this buffer to the zstd [Decoder](https://docs.rs/zstd/0.9.0+zstd.1.5.0/zstd/stream/read/struct.Decoder.html), which takes anything that implements [Read](https://doc.rust-lang.org/std/io/trait.Read.html),
-it also wraps it around a [BufRead](https://doc.rust-lang.org/nightly/std/io/trait.BufRead.html) for buffered reading.
+it also wraps it around a [BufReader](https://doc.rust-lang.org/nightly/std/io/struct.BufReader.html) for buffered reading.
 
 ```rust
 // The type of decoder is Decoder<BufReader<Cursor<Vec<u8>>>>
