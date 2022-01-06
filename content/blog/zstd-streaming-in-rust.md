@@ -69,7 +69,6 @@ Now we need to pass this `decoder` to tar to get its entries:
 let mut archive = tar::Archive::new(decoder);
 
 // Loop over the entries
-
 for entry in archive.entries()? {
     let entry = e.unwrap();
     let path = entry.path().unwrap();
