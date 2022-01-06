@@ -83,7 +83,7 @@ Here entry implements Read too, in our case each entry is a json file, we could 
 let data: ServerList = simd_json::from_reader(entry).expect("parse json");
 ```
 
-This way, we are parsing each file efficiently while using almost no RAM thanks to the streaming nature of these operations.
+This way, we are parsing each file efficiently while using almost no memory thanks to the streaming nature of these operations.
 
 This all fits really well thanks to the design of [Read](https://doc.rust-lang.org/std/io/trait.Read.html) and [Write](https://doc.rust-lang.org/std/io/trait.Write.html).
 
