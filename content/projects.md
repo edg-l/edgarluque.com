@@ -5,11 +5,6 @@ template_page = "page.html"
 
 All my projects are hosted at [github.com/edg-l](https://github.com/edg-l) and [git.edgarluque.com](https://git.edgarluque.com/)
 
-## Rustack
-An opinionated fullstack web template
-
-[github.com/edg-l/rustack](https://github.com/edg-l/rustack)
-
 ## sitewriter
 A rust library to write sitemaps
 
@@ -56,6 +51,3 @@ A spigot plugin that adds a "bot" that will answer users questions without any c
 Get information about teeworlds / ddnet servers using typescript or javascript.
 
 [github.com/edg-l/teeworlds-server-status](https://github.com/edg-l/teeworlds-server-status)
-
-## A blog about programming in Catalan
-[struct.cat](https://struct.cat/)
