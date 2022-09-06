@@ -31,9 +31,9 @@ Now, I only saw it mentioned on [Wikipedia](https://en.wikipedia.org/wiki/Bencod
 
 It's a parser combinators library, which essentially means that from some really basic functions you create more complex ones and keep building on top of it, until you have one final function that parses everything.
 
-There are quite a lot of already provided combinators, which you can find in the ["choosing a combinator"](https://github.com/Geal/nom/blob/main/doc/choosing_a_combinator.md) docs.
+It comes with some basic combinators, you can find them in the ["choosing a combinator"](https://github.com/Geal/nom/blob/main/doc/choosing_a_combinator.md) docs.
 
-For example, there the parser function `digit1` which returns one or more digits.
+For example, there is a parser function `digit1` which returns one or more digits.
 
 ```rust
 fn parser(input: &str) -> IResult<&str, &str> {
@@ -45,30 +45,30 @@ assert_eq!(parser("c1"), Err(Err::Error(Error::new("c1", ErrorKind::Digit))));
 assert_eq!(parser(""), Err(Err::Error(Error::new("", ErrorKind::Digit))));
 ```
 
-All parsers and combinators are build around `IResult`:
+All parsers are build around `IResult`:
 
 ```rust
 pub type IResult<I, O, E = Error<I>> = Result<(I, O), Err<E>>;
 ```
 
-Basically, when a parser correctly finishes, it returns a tuple with a slice starting where the parser ended and the parsed content.
+Basically, when a parser correctly finishes, it returns a tuple with a slice starting where the parser ended and the parsed content. It seamlessly works with `&str` and `&[u8]` so most of the time you don't need to do any allocation when parsing.
 
 So `digit1("123therest")` returns a tuple with `("therest", "123")`.
 
 # Handling errors
 
-Since when parsing bencode there can be possible errors outside what the combinators may find, such as leading 0's on integers, we need to create our own error struct:
+When parsing bencode there can be possible errors outside of what the combinators may find, such as leading 0's on integers, we need to create our own error struct:
 
 ```rust
 #[derive(Debug, thiserror::Error)]
 pub enum Error<I> {
-    // For when the integer is invalid: e.g leading 0's
+    // When the integer is invalid: e.g leading 0's
     #[error("invalid integer: {0:?}")]
     InvalidInteger(I),
-    // For when the byte string length is invalid, e.g it's negative.
+    // When the byte string length is invalid, e.g it's negative.
     #[error("invalid bytes length: {0:?}")]
     InvalidBytesLength(I),
-    // For when there is an error parsing the ascii integer to a i64.
+    // When there is an error parsing the ascii integer to a i64.
     #[error("parse int error: {0:?}")]
     ParseIntError(#[from] ParseIntError),
     // Errors from the combinators itself.
