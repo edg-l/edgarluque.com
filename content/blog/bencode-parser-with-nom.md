@@ -7,11 +7,11 @@ draft = true
 categories = ["rust"]
 +++
 
-Since long I have wanted try out nom, at first I boldly started parsing [PDFs](https://github.com/edg-l/nompdf) but after realizing the scope of such project, I put it off and started with a way smaller idea: a bencode parser.
+Since long I wanted try out nom, at first I boldly started parsing [PDFs](https://github.com/edg-l/nompdf) but after realizing the scope of such project, I put it off and started with a way smaller idea: a bencode parser.
 
 If you have never delved into the BitTorrent protocol you probably don't know what bencoding is so let me explain it.
 
-# Bencode Spec
+# The Bencode Spec
 
 [Bencode](https://en.wikipedia.org/wiki/Bencode) is the encoding used by the BitTorrent protocol to store data, `.torrent` files are encoded using this.
 
@@ -105,7 +105,7 @@ We will also define the type alias BenResult, so we don't need to type as much e
 type BenResult<'a> = IResult<&'a [u8], Value<'a>, Error<&'a [u8]>>;
 ```
 
-We use `&'a [u8]` since thats the type of data our parsers will be dealing with.
+We use `&[u8]` since thats the type of data our parsers will be dealing with.
 
 # Representing all the possible bencode value types
 
@@ -123,7 +123,7 @@ pub enum Value<'a> {
 
 # Parsing the byte string
 
-Lets start with the easiest one, the byte strings, as you can recall, made up of an ASCII integer, a colon and the data:
+Lets start with the easiest one, byte strings, as you can recall, they are made up of the a textual integer, a colon and the data:
 
 `4:spam`
 
@@ -232,7 +232,7 @@ We will use the following new nom parsers:
 
 - [many_till(f, g)](https://docs.rs/nom/7.1.1/nom/multi/fn.many_till.html): Applies the parser f until the parser g produces a result. Returns a pair consisting of the results of f in a Vec and the result of g.
 
-We will apply the parser `alt` parser, until the `char` parser recognizes the end character `e`:
+We will apply the parser `alt` until the `char` parser recognizes the end character `e`:
 
 ```rust
 // Self here is the enum Value
