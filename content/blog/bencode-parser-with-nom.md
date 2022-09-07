@@ -1,7 +1,7 @@
 +++
 title = "Creating a bencode parser with nom"
 description = "The encoding used by the peer-to-peer file sharing system BitTorrent"
-date = 2022-07-15
+date = 2022-09-07
 draft = true
 [taxonomies]
 categories = ["rust"]
@@ -107,6 +107,20 @@ type BenResult<'a> = IResult<&'a [u8], Value<'a>, Error<&'a [u8]>>;
 
 We use `&'a [u8]` since thats the type of data our parsers will be dealing with.
 
+# Representing all the possible bencode value types
+
+To hold all the value types bencode has, an enum like this will do:
+
+```rust
+#[derive(Debug, Clone)]
+pub enum Value<'a> {
+    Bytes(&'a [u8]),
+    Integer(i64),
+    List(Vec<Self>),
+    Dictionary(HashMap<&'a [u8], Self>),
+}
+```
+
 # Parsing the byte string
 
 Lets start with the easiest one, the byte strings, as you can recall, made up of an ASCII integer, a colon and the data:
@@ -120,3 +134,184 @@ fn parse_bytes(start_inp: &'a [u8]) -> BenResult<'a> {
     todo!()
 }
 ```
+
+We can use the [digit1](https://docs.rs/nom/7.1.1/nom/character/complete/fn.digit1.html) combinator to get the length of the byte string and then the [char](https://docs.rs/nom/7.1.1/nom/character/complete/fn.char.html) to consume the colon:
+
+```rust
+let (inp, length) = digit1(start_inp)?;
+
+// We don't need the colon so we just discard it with '_'.
+let (inp, _) = char(':')(inp)?;
+```
+
+Now we need to convert the length (which is a number in ASCII) to an integer and check if it's 0, which would be an error:
+
+```rust
+// SAFETY: digit1 always returns ASCII numbers, which are always valid UTF-8.
+let length = unsafe { std::str::from_utf8_unchecked(length) };
+
+let length: u64 = length.parse().map_err(Error::ParseIntError)?;
+
+if length == 0 {
+    Err(Error::InvalidBytesLength(start_inp))?
+}
+```
+
+Then we use the [take](https://docs.rs/nom/7.1.1/nom/bytes/complete/fn.take.html) parser to take an exact amount of elements and finally return it, resulting in the complete function like this:
+
+```rust
+fn parse_bytes(start_inp: &'a [u8]) -> BenResult<'a> {
+    let (inp, length) = digit1(start_inp)?;
+
+    let (inp, _) = char(':')(inp)?;
+
+    // SAFETY: digit1 always returns ASCII numbers, which are always valid UTF-8.
+    let length = unsafe { std::str::from_utf8_unchecked(length) };
+
+    let length: u64 = length.parse().map_err(Error::ParseIntError)?;
+
+    if length == 0 {
+        Err(Error::InvalidBytesLength(start_inp))?
+    }
+
+    let (inp, characters) = take(length)(inp)?;
+
+    Ok((inp, Value::Bytes(characters)))
+}
+```
+
+# Parsing integers
+
+Format: `i10e`, `i-30e`
+
+Integers can come alone or with the positive and negative symbol, we also need to handle the invalid `-0` and they can't have leading `0`s like `002`.
+
+Here the power of combinators can come to light, we will use the following parsers and combine them:
+
+- [delimited](https://docs.rs/nom/7.1.1/nom/sequence/fn.delimited.html):  Matches an object from the first parser and discards it, then gets an object from the second parser, and finally matches an object from the third parser and discards it.
+- [char](https://docs.rs/nom/7.1.1/nom/character/complete/fn.char.html): Recognizes and consumes a single character.
+- [alt](https://docs.rs/nom/7.1.1/nom/branch/fn.alt.html): Tests a list of parsers one by one until one succeeds.
+- [recognize](https://docs.rs/nom/7.1.1/nom/combinator/fn.recognize.html): If the child parser was successful, return the consumed input as produced value.
+- [pair](https://docs.rs/nom/7.1.1/nom/sequence/fn.pair.html): Gets an object from the first parser, then gets another object from the second parser.
+
+With this we can handle the following example numbers: `1,+1,-1,10,0,50,-62`
+
+```rust
+fn parse_integer(start_inp: &'a [u8]) -> BenResult<'a> {
+    let (inp, value) = delimited(
+        char('i'),
+        alt((
+            recognize(pair(char('+'), digit1)),
+            recognize(pair(char('-'), digit1)),
+            digit1,
+        )),
+        char('e'),
+    )(start_inp)?;
+
+    // SAFETY: This will always be a valid UTF-8 sequence.
+    let value_str = unsafe { std::str::from_utf8_unchecked(value) };
+
+    if value_str.starts_with("-0") || (value_str.starts_with('0') && value_str.len() > 1) {
+        Err(Error::InvalidInteger(start_inp))?
+    } else {
+        let value_integer: i64 = value_str.parse().map_err(Error::ParseIntError)?;
+        Ok((inp, Value::Integer(value_integer)))
+    }
+}
+```
+
+# Parsing lists
+
+Format: `li2ei3ei4ee`, `l4:spam4:eggsi22eli1ei2eee`
+
+A list can hold any type of value, including dictionaries and list themselves.
+
+Now that we can parse numbers and byte strings, parsing lists is just a matter of using those parsers.
+
+We will use the following new nom parsers:
+
+- [many_till(f, g)](https://docs.rs/nom/7.1.1/nom/multi/fn.many_till.html): Applies the parser f until the parser g produces a result. Returns a pair consisting of the results of f in a Vec and the result of g.
+
+We will apply the parser `alt` parser, until the `char` parser recognizes the end character `e`:
+
+```rust
+// Self here is the enum Value
+
+fn parse_list(start_inp: &'a [u8]) -> BenResult<'a> {
+    let (inp, value) = preceded(
+        char('l'),
+        many_till(
+            alt((
+                Self::parse_bytes,
+                Self::parse_integer,
+                Self::parse_list,
+                Self::parse_dict,
+            )),
+            char('e'),
+        ),
+    )(start_inp)?;
+
+    Ok((inp, Value::List(value.0)))
+}
+```
+
+# Parsing dictionaries
+
+Format: `d3:cow3:moo4:spam4:eggse`
+
+Parsing dictionaries is nearly identical to parsing lists, but we need to parse the keys too, which are byte strings:
+
+```rust
+fn parse_dict(start_inp: &'a [u8]) -> BenResult<'a> {
+    let (inp, value) = preceded(
+        char('d'),
+        many_till(
+            pair(
+                Self::parse_bytes,
+                alt((
+                    Self::parse_bytes,
+                    Self::parse_integer,
+                    Self::parse_list,
+                    Self::parse_dict,
+                )),
+            ),
+            char('e'),
+        ),
+     )(start_inp)?;
+
+    let data = value.0.into_iter().map(|x| {
+        // Keys are always a byte string
+        if let Value::Bytes(key) = x.0 {
+            (key, x.1)
+        } else {
+            unreachable!()
+        }
+    });
+
+    let map = HashMap::from_iter(data);
+
+    Ok((inp, Value::Dictionary(map)))
+}
+```
+
+# The parser
+
+And finally, we can make the final parser function which parses all the possible values:
+
+```rust
+pub fn parse(source: &[u8]) -> Result<Vec<Value>, Error<&[u8]>> {
+    let (_, items) = many_till(
+        alt((
+            Value::parse_bytes,
+            Value::parse_integer,
+            Value::parse_list,
+            Value::parse_dict,
+        )),
+        eof,
+    )(source)?;
+
+    Ok(items.0)
+}
+```
+
+You can find the full source code here: <https://github.com/edg-l/nom-bencode>
