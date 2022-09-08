@@ -313,4 +313,26 @@ pub fn parse(source: &[u8]) -> Result<Vec<Value>, Error<&[u8]>> {
 }
 ```
 
+An example using the parser:
+
+```rust
+use nom_bencode::Value;
+
+let data = nom_bencode::parse(b"d3:cow3:moo4:spam4:eggse").unwrap();
+let v = data.first().unwrap();
+
+if let Value::Dictionary(dict) = v {
+    let v = dict.get("cow".as_bytes()).unwrap();
+
+    if let Value::Bytes(data) = v {
+        assert_eq!(data, b"moo");
+    }
+
+    let v = dict.get("spam".as_bytes()).unwrap();
+    if let Value::Bytes(data) = v {
+        assert_eq!(data, b"eggs");
+    }
+}
+```
+
 You can find the full source code here: <https://github.com/edg-l/nom-bencode>
