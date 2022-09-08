@@ -1,7 +1,7 @@
 +++
 title = "Creating a bencode parser with nom"
 description = "The encoding used by the peer-to-peer file sharing system BitTorrent"
-date = 2022-09-07
+date = 2022-09-08
 [taxonomies]
 categories = ["rust"]
 +++
