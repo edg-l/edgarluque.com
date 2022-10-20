@@ -1,5 +1,6 @@
 $color: #E6E1CF;
 $bgcolor: #14191F;
+$code: #FFAA00;
 
 /*
   1. Use a more-intuitive box-sizing model.
@@ -132,7 +133,8 @@ code {
   font-family: "JetBrains Mono", monospace;
   padding: 2px;
   line-height: 1.8;
-  border: 2px $color dotted;
+  font-weight:bold;
+  color: $code;
 }
 
 blockquote {
