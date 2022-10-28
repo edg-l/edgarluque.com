@@ -1,6 +1,7 @@
 $color: #E6E1CF;
 $bgcolor: #14191F;
 $code: #FFAA00;
+$codeblock: #0f1419;
 
 /*
   1. Use a more-intuitive box-sizing model.
@@ -116,7 +117,7 @@ a {
 pre {
   padding: 10px;
   overflow-x: auto;
-  border: 4px dotted $color;
+  border-radius: 4px;
   margin: 1em 0;
   font-family: "JetBrains Mono", monospace;
 
@@ -136,8 +137,9 @@ code {
 }
 
 blockquote {
-  border: 1px $color dashed;
-  padding: 5px 10px;
+  background-color: $codeblock;
+  border-left: 4px #FFAA00 solid;
+  padding:0px 10px
 }
 
 .container {
