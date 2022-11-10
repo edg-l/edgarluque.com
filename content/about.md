@@ -1,0 +1,15 @@
++++
+title = "About"
+template_page = "page.html"
++++
+
+Contact email: edgar @ (this website domain)
+
+PGP: `8924 D702 B475 BBAA E701  5C47 230C 9452 0D02 6311`
+
+Or more handy:
+
+```bash
+gpg --recv-keys 230C94520D026311
+```
+
