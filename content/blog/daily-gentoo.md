@@ -87,5 +87,5 @@ I am currently maintaining the [ddnet](https://github.com/ddnet/ddnet) ebuild, w
 Something that I like about Gentoo is that, in my case, due to long compile times for (possibly bloated) software, you tend to avoid those, so
 it forces you to try to minimize dependencies, find software that just does what you want, most probably without any GUI.
 
-It's certainly a different experience compared to binary distributed distros. You can also enjoy the small performance benefits of building with everything with your native [ISA](https://en.wikipedia.org/wiki/Instruction_set_architecture).
+It's certainly a different experience compared to binary distributed distros. You can also enjoy the small performance benefits of building everything with your native [ISA](https://en.wikipedia.org/wiki/Instruction_set_architecture).
 
