@@ -1,4 +1,13 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+
+{% set rss_path = term.path ~ "atom.xml" %}
+
+{% block rss %}
+  {% set rss_path = term.path ~ "atom.xml" %}
+  <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path=rss_path, trailing_slash=false) }}">
+{% endblock rss %}
+
+{% block content %}
 
 <h1 class="capitalize">{{ term.name }} articles</h1>
 
@@ -12,5 +21,7 @@
   </li>
   {% endfor %}
 </ul>
+
+<p><a href="{{ get_url(path=rss_path, trailing_slash=false) }}">RSS Feed</a></p>
 
 {% endblock content %}
