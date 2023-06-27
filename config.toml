@@ -6,6 +6,8 @@ description = "My personal website."
 
 default_language = "en"
 
+generate_feed = true
+
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
 
