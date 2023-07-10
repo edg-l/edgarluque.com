@@ -134,7 +134,7 @@ It works by taking successive values of an arbitrary [quadratic polynomial](http
 
 We will use `hash(key) + (i + i^2) / 2`.
 
-Let `x` be the value of `hash(key) (mod capacity)`.
+Let `x` be the value of `hash(key)`.
 
 Starting with `i = 0`:
 
