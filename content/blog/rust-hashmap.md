@@ -66,7 +66,7 @@ impl<K, V, S> MyHashmap<K, V, S> {
 ```
 
 You may wonder why there are no trait bounds in this impl block, like `K: Hash`, and this is because it's usually better to only put the trait
-bounds in impl blocks where you use them. The standard library does this extensively (from what i have seen).
+bounds in impl blocks where you use them. The standard library does this extensively (from what I have seen).
 
 ## Load factor
 
