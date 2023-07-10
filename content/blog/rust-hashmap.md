@@ -80,7 +80,7 @@ According to some [papers](https://dl.acm.org/doi/10.1145/356643.356645) when th
 
 ## Probing / Searching
 
-When searching for a slot, either at insertion or search, we will need to do something when a hash colision happens:
+When searching for a slot, either at insertion or search, we will need to do something when a hash collision happens:
 
 ### Linear probing
 
