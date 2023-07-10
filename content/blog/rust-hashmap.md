@@ -27,7 +27,7 @@ pub struct MyHashmap<K, V, S = RandomState> {
     len: usize,
     // The hasher.
     state: S,
-    // Wehther to use quadratic or linear probing.
+    // Whether to use quadratic or linear probing.
     quadratic: bool,
 }
 ```
