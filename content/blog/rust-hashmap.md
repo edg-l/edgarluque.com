@@ -308,3 +308,5 @@ quadratic probing 10000     time:   [453.38 µs 454.40 µs 455.71 µs]
 linear probing 100000       time:   [6.4169 ms 6.4213 ms 6.4267 ms]
 quadratic probing 100000    time:   [6.3506 ms 6.3548 ms 6.3601 ms]
 ```
+
+You can find all the code here: <https://gist.github.com/edg-l/7842a445367bfdf2a89ad8c5f70348d4>
