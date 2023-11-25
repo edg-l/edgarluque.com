@@ -7,7 +7,7 @@ draft = true
 categories = ["rust", "MLIR", "LLVM"]
 +++
 
-If you haven't heard about [MLIR](https://mlir.llvm.org/) yet, it is a novel project born within LLVM.
+If you haven't heard about [MLIR](https://mlir.llvm.org/) yet, it is a novel project born within LLVM, also what powers [MOJO](https://www.modular.com/mojo), the [Torch-MLIR project](https://github.com/llvm/torch-mlir), the high level IR of[flang](https://github.com/llvm/llvm-project/tree/main/flang), [iree](https://github.com/openxla/iree) and [more](https://mlir.llvm.org/users/).
 
 But in case you don't know much about LLVM yet, I'll try to explain a bit.
 
