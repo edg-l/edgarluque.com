@@ -28,8 +28,11 @@ It is what LLVM works on to apply all the optimization passes, it being SSA is o
 - **Strength reduction**: replacing expensive operations by less expensive but equivalent ones, e.g. replace integer multiply or divide by powers of 2 with the potentially less expensive shift left (for multiply) or shift right (for divide).
 - **Register allocation**: optimize how the limited number of machine registers may be used for calculations
 
-If you want to learn LLVM IR in detail, you should look at the [LLVM Language Reference  Manual](https://llvm.org/docs/LangRef.html). If you know assembly already it shouldn't be too hard, one interesting property is that LLVM has infinite registers, a small type system, you can work with integers of any bit size (i1, i32, i1942652), although if you don't use a recent version (17+) you will find some bugs. Probably the biggest wall you will hit is learning about GEPs (Get Element Ptr), it's often misunderstood how it works, so they even have a entire documentation page for it: <https://llvm.org/docs/GetElementPtr.html>.
-Another thing that may need attention are [PHI nodes](https://stackoverflow.com/questions/11485531/what-exactly-phi-instruction-does-and-how-to-use-it-in-llvm), which are how LLVM selects a value that comes from control flow branches.
+If you want to learn LLVM IR in detail, you should look at the [LLVM Language Reference  Manual](https://llvm.org/docs/LangRef.html). If you know assembly already it shouldn't be too hard, one interesting property is that LLVM has infinite registers, so you don't need to worry about register allocation.
+It has a simple type system, you can work with integers of any bit size (i1, i32, i1942652), although if you don't use a recent version (17+) you will find some bugs using big integers.
+
+Probably the biggest wall you will hit is learning about GEPs (Get Element Ptr), it's often misunderstood how it works, so they even have a entire documentation page for it: <https://llvm.org/docs/GetElementPtr.html>.
+Another thing that may need attention are [PHI nodes](https://stackoverflow.com/questions/11485531/what-exactly-phi-instruction-does-and-how-to-use-it-in-llvm), which are how LLVM selects a value that comes from control flow branches due to the nature of SSA.
 
 The API to build such IR have the following structures:
 
