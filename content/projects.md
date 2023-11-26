@@ -5,6 +5,12 @@ template_page = "page.html"
 
 All my projects are hosted at [github.com/edg-l](https://github.com/edg-l) and [git.edgarluque.com](https://git.edgarluque.com/)
 
+## ddstats.org
+
+A DDNet data frontend for its master server.
+
+[ddstats.org](/)
+
 ## sitewriter
 A rust library to write sitemaps
 

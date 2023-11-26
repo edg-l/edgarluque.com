@@ -1,6 +1,6 @@
 +++
 title = "Intro to LLVM and MLIR with Rust and Melior"
-date = 2023-11-24
+date = 2023-11-26
 description = "Learning MLIR with too many dialects."
 draft = true
 [taxonomies]
@@ -46,7 +46,7 @@ If you want to use LLVM with Rust in a type safe manner, I recommend the really 
 
 So what is MLIR? It goes a level above, in that LLVM IR itself is one of it's dialects.
 
-MLIR is kind of a IR of IRs, and it supports many of them using "dialects". For example, you may have heard of NVVM IR (CUDA), MLIR supports expressing it through the [NVVM](https://mlir.llvm.org/docs/Dialects/NVVMDialect/) dialect, but there is also a more generic and higher level [GPU](https://mlir.llvm.org/docs/Dialects/GPU/) dialect.
+MLIR is kind of a IR of IRs, and it supports many of them using "dialects". For example, you may have heard of NVVM IR (CUDA), MLIR supports it through the [NVVM](https://mlir.llvm.org/docs/Dialects/NVVMDialect/) dialect, but there is also a more generic and higher level [GPU](https://mlir.llvm.org/docs/Dialects/GPU/) dialect.
 
 Those dialects define *conversion* [passes](https://mlir.llvm.org/docs/Passes/) between them, meaning you can convert IR code using the GPU dialect to the NVVM dialect.
 
@@ -68,13 +68,15 @@ You can also [make your own dialect](https://mlir.llvm.org/docs/Tutorials/Creati
 
 All these dialects can exist in your code at the same time, but at the end, you want to execute your code, for this there are Targets, one is LLVM IR itself. In this case, you would need to use passes to convert all dialects to the LLVM dialect, and then you can make the [translation from MLIR to LLVM IR](https://mlir.llvm.org/docs/TargetLLVMIR/).
 
-The main structure of MLIR is as follow:
+The structure of MLIR is recursive as follows:
 
 ```
-Region -> Block(s) -> Operations -> Region
+Region -> Block(s) -> Operation(s) -> Region(s)
 ```
 
-A region can have 1 or more blocks, each block can have one or more operations, a operation can use a region as part of its "operation".
+The top level module is also a operation, which holds a single region with a single block.
+
+A region can have 1 or more blocks, each block can have one or more operations, a operation can use 1 or more regions.
 
 To use MLIR with Rust, I recommend [melior](https://github.com/raviqqe/melior), here is a snippet making a function that adds 2 numbers:
 
