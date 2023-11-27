@@ -201,7 +201,7 @@ module.body().append_operation(func::func(
             location,
         ));
 
-        block.append_operation(r#while(
+        block.append_operation(scf::r#while(
             &[initial.result(0).unwrap().into()],
             &[float_type],
             {
@@ -220,7 +220,7 @@ module.body().append_operation(func::func(
                     location,
                 ));
 
-                block.append_operation(super::condition(
+                block.append_operation(scf::condition(
                     condition.result(0).unwrap().into(),
                     &[result.result(0).unwrap().into()],
                     location,
@@ -239,7 +239,7 @@ module.body().append_operation(func::func(
                     location,
                 ));
 
-                block.append_operation(r#yield(
+                block.append_operation(scf::r#yield(
                     &[result.result(0).unwrap().into()],
                     location,
                 ));
