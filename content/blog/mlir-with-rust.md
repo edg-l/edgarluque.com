@@ -19,13 +19,13 @@ LLVM basis is the LLVM IR, a [Static single-assignment form](https://en.wikipedi
 It is what LLVM works on to apply all the optimization passes, it being SSA is one of the major enablers of the optimizations it can do (and what makes it easier to implement them), to name a few (from wikipedia):
 
 - **Constant propagation**: conversion of computations from runtime to compile time, e.g. treat the instruction a=3*4+5; as if it were a=17;
-- **Value range propagation**: precompute the potential ranges a calculation could be, allowing for the creation of branch predictions in advance
-- **Sparse conditional constant propagation**: range-check some values, allowing tests to predict the most likely branch
-- **Dead-code elimination**: remove code that will have no effect on the results
-- **Global value numbering**: replace duplicate calculations producing the same result
-- **Partial-redundancy elimination**: removing duplicate calculations previously performed in some branches of the program
+- **Value range propagation**: precompute the potential ranges a calculation could be, allowing for the creation of branch predictions in advance.
+- **Sparse conditional constant propagation**: range-check some values, allowing tests to predict the most likely branch.
+- **Dead-code elimination**: remove code that will have no effect on the results.
+- **Global value numbering**: replace duplicate calculations producing the same result.
+- **Partial-redundancy elimination**: removing duplicate calculations previously performed in some branches of the program.
 - **Strength reduction**: replacing expensive operations by less expensive but equivalent ones, e.g. replace integer multiply or divide by powers of 2 with the potentially less expensive shift left (for multiply) or shift right (for divide).
-- **Register allocation**: optimize how the limited number of machine registers may be used for calculations
+- **Register allocation**: optimize how the limited number of machine registers may be used for calculations.
 
 If you want to learn LLVM IR in detail, you should look at the [LLVM Language Reference  Manual](https://llvm.org/docs/LangRef.html). If you know assembly already it shouldn't be too hard, one interesting property is that LLVM has infinite registers, so you don't need to worry about register allocation.
 It has a simple type system, you can work with integers of any bit size (i1, i32, i1942652), although if you don't use a recent version (17+) you will find some bugs using big integers.
