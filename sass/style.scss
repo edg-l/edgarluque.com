@@ -111,7 +111,6 @@ p {
 
 a {
   color: $color;
-  font-weight: bold;
   text-underline-offset: 4px;
 }
 
@@ -133,7 +132,7 @@ code {
   font-family: "JetBrains Mono", "Courier New", monospace;
   padding: 2px;
   line-height: 1.8;
-  font-weight:bold;
+  font-weight: bold;
   color: $code;
 }
 
