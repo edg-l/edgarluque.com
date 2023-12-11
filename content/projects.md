@@ -9,7 +9,7 @@ All my projects are hosted at [github.com/edg-l](https://github.com/edg-l) and [
 
 A DDNet data frontend for its master server.
 
-[ddstats.org](/)
+[ddstats.org](https://ddstats.org/)
 
 ## sitewriter
 A rust library to write sitemaps
