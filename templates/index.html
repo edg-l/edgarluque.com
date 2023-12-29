@@ -4,22 +4,24 @@
   This is my personal website, where I post articles and other stuff, usually about coding.
 </p>
 
+<p>Consider sponsoring me: <iframe src="https://github.com/sponsors/edg-l/button" title="Sponsor edg-l" height="32"
+  width="114" style="border: 0; border-radius: 6px; display: inline-block; vertical-align: middle;"></iframe>
+<a href="https://liberapay.com/edgl/donate">
+  <img style="display: inline-block; vertical-align: middle;" alt="Donate using Liberapay"
+    src="https://liberapay.com/assets/widgets/donate.svg">
+</a>
+</p>
+
 {% set section = get_section(path="blog/_index.md") %}
 <h2>Articles</h2>
 <ul class="posts">
   {% for page in section.pages %}
   <li>
     <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
-    <a href="{{ page.permalink }}" title="{{ page.description }}"
-      >{{ page.title }}</a>
+    <a href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
   </li>
   {% endfor %}
 </ul>
-
-<p>Consider sponsoring me: <iframe src="https://github.com/sponsors/edg-l/button" title="Sponsor edg-l" height="32" width="114" style="border: 0; border-radius: 6px; display: inline-block; vertical-align: middle;"></iframe>
-  <a href="https://liberapay.com/edgl/donate">
-    <img style="display: inline-block; vertical-align: middle;" alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg">
-  </a></p>
 
 <p><a href="/atom.xml">RSS Feed</a></p>
 
