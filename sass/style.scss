@@ -205,9 +205,10 @@ ul {
   margin-bottom: 10px;
 }
 
-h1,h2,h3 {
-  border-bottom: 4px $color solid;
+h1,h2 {
+  border-bottom: 2px $color solid;
   border-bottom-color: #FFAA00;
+  margin-bottom: 1rem;
 }
 
 table {
