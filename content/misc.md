@@ -16,6 +16,9 @@ This page lists miscellaneous stuff I found or like, such as links, opinions, et
 - [Copyleft: Pragmatic Idealism](https://www.gnu.org/philosophy/pragmatic.en.html)
 - [How To Become A Hacker](http://www.catb.org/~esr/faqs/hacker-howto.html)
 
+### Compilers
+- [Switch lowering in GCC](https://xoranth.net/gcc-switch/)
+
 ### Interesting projects
 
 #### Games
