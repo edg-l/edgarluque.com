@@ -5,10 +5,18 @@ template_page = "page.html"
 
 This page lists miscellaneous stuff I found or like, such as links, opinions, etc.
 
+> To follow the path:  \
+look to the master,  \
+follow the master,  \
+walk with the master,  \
+see through the master,  \
+become the master.
+
 ## External Links
 
 ### Rust
 - [Writing an OS in Rust](https://os.phil-opp.com/)
+- [RustPython](https://rustpython.github.io/)
 
 ### Software Philosophy
 
@@ -26,3 +34,7 @@ This page lists miscellaneous stuff I found or like, such as links, opinions, et
 
 #### Rendering / GPU
 - [ZLUDA](https://github.com/vosen/ZLUDA)
+
+### Other
+- [Library of Babel](https://libraryofbabel.info/)
+- [oasis](https://github.com/oasislinux/oasis)
