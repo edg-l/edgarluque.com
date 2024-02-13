@@ -45,3 +45,4 @@ become the master.
 ### Other
 - [Library of Babel](https://libraryofbabel.info/)
 - [oasis](https://github.com/oasislinux/oasis)
+- [The Last Question By Isaac Asimov](https://users.ece.cmu.edu/~gamvrosi/thelastq.html)
