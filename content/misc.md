@@ -26,6 +26,10 @@ become the master.
 
 ### Compilers
 - [Switch lowering in GCC](https://xoranth.net/gcc-switch/)
+- [LLVM Weekly](https://llvmweekly.org/)
+- [MLIR](https://mlir.llvm.org/)
+- [inkwell](https://github.com/TheDan64/inkwell)
+- [melior](https://github.com/raviqqe/melior)
 
 ### Interesting projects
 
@@ -34,6 +38,9 @@ become the master.
 
 #### Rendering / GPU
 - [ZLUDA](https://github.com/vosen/ZLUDA)
+
+#### Parsing
+- [lalrpop](https://github.com/lalrpop/lalrpop)
 
 ### Other
 - [Library of Babel](https://libraryofbabel.info/)
