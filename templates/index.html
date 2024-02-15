@@ -17,7 +17,7 @@
 <ul class="posts">
   {% for page in section.pages %}
   <li>
-    <span><time datetime="{{ page.date }}">{{ page.date }}</time>: </span>
+    <span><time datetime="{{ page.date }}">{{ page.date }}</time> - </span>
     <a href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
   </li>
   {% endfor %}

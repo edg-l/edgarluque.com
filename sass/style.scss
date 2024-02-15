@@ -1,6 +1,7 @@
 $color: #E6E1CF;
 $bgcolor: #14191F;
-$code: #FFAA00;
+$code: #7abec2;
+$accent: #4d7577;
 $codeblock: #0f1419;
 
 /*
@@ -138,8 +139,9 @@ code {
 
 blockquote {
   background-color: $codeblock;
-  border-left: 4px #FFAA00 solid;
-  padding:0px 10px;
+  border-left: 4px $accent solid;
+  padding: 0.02em 10px;
+  margin: 6px 0px;
 }
 
 .container {
@@ -207,7 +209,7 @@ ul {
 
 h1,h2 {
   border-bottom: 2px $color solid;
-  border-bottom-color: #FFAA00;
+  border-bottom-color: $accent;
   margin-bottom: 1rem;
 }
 
@@ -232,3 +234,7 @@ th, td {
 }
 
 tr:nth-child(even) {background-color: #1b2127;}
+
+.footer {
+  border-top: 2px $accent solid
+}
