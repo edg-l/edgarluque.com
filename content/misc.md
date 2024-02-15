@@ -31,6 +31,9 @@ become the master.
 - [inkwell](https://github.com/TheDan64/inkwell)
 - [melior](https://github.com/raviqqe/melior)
 
+### Perfomance
+- [Algorithms for Modern Hardware](https://en.algorithmica.org/hpc/)
+
 ### Interesting projects
 
 #### Games
@@ -46,3 +49,4 @@ become the master.
 - [Library of Babel](https://libraryofbabel.info/)
 - [oasis](https://github.com/oasislinux/oasis)
 - [The Last Question By Isaac Asimov](https://users.ece.cmu.edu/~gamvrosi/thelastq.html)
+- [Gwern.net](https://gwern.net/index)
