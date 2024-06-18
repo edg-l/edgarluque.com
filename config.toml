@@ -1,5 +1,5 @@
 # The URL the site will be built for
-base_url = "https://edgarluque.com"
+base_url = "https://edgl.devs"
 
 title = "Edgar Luque"
 description = "My personal website."
