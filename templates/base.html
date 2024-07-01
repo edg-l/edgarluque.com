@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Edgar Luque" />
     {% block seo %}
-    <meta name="description" content="My personal website." />
+    <meta name="description" content="{{ config.description }}" />
     <meta property="og:title" content="Home" />
-    <meta property="og:description" content="My personal website." />
+    <meta property="og:description" content="{{ config.description }}" />
     <meta property="og:type" content="article" />
-    <meta property="twitter:title" content="Home" />
-    <meta property="twitter:description" content="My personal website." />
+    <meta property="twitter:title" content="{{ config.title }}" />
+    <meta property="twitter:description" content="{{ config.description }}" />
     {% endblock %}
     <meta property="twitter:creator" content="@edgluq" />
     <meta property="twitter:site" content="@edgluq" />
-    <title>{% block title %}Home{% endblock %} | Edgar Luque</title>
+    <title>{% block title %}Home{% endblock %} | {{ config.title }}</title>
     <link rel="stylesheet" href="/style.css?v=3" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
