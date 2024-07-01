@@ -1,4 +1,8 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+
+{% block title %}{{ taxonomy.name|capitalize }}{% endblock title %}
+
+{% block content %}
 
 <h1 class="capitalize">{{ taxonomy.name }}</h1>
 <ul class="categories">
@@ -6,7 +10,7 @@
 <li>
   <a href="{{ term.permalink }}" title="{{ term.name }}" class="capitalize"
     >{{ term.name }}</a
-  >
+  > <span style="color: rgb(150, 150, 150);">({{ term.page_count }})</span>
 </li>
 {% endfor %}
 </ul>
