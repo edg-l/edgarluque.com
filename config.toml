@@ -2,11 +2,11 @@
 base_url = "https://edgl.dev"
 
 title = "Edgar Luque"
-description = "My personal website."
+description = "Software Developer"
 
 default_language = "en"
 
-generate_feed = true
+generate_feeds = true
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
