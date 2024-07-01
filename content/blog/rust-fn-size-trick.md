@@ -6,7 +6,7 @@ description = "A simple trick to avoid generics generating a lot of code."
 categories = ["rust"]
 +++
 
-When using generics in Rust (an any language that supports this), what happens under the hood is that the compiler generates a function
+When using generics in Rust (and any language that supports this), what happens under the hood is that the compiler generates a function
 implementation when it finds a call for each combination of different types used in the generic parameters.
 
 This can produce a lot of code if the function body is big.
