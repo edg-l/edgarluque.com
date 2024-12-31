@@ -2,9 +2,8 @@
 title = "A 2024 wrap up"
 description = "Things I did and learned on 2024"
 date = 2024-12-31
-draft = true
 [taxonomies]
-categories = ["misc"]
+categories = ["personal"]
 +++
 
 In 2024, I started some side projects:
