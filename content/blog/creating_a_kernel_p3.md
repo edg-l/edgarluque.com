@@ -493,7 +493,7 @@ pub fn init_frame_allocator(memory_regions: &'static MemoryMapResponse) {
     // Create and initialize the allocator
     let mut allocator = BitmapFrameAllocator::new(memory_regions, bitmap_storage);
 
-    // Mark bitmap storage frames as allocated (no heap allocation here)
+    // Mark bitmap storage frames as allocated
     let frame_count = storage_size.div_ceil(4096); // Round up to frames
     for i in 0..frame_count {
         let frame_addr = storage_start_addr + (i * 4096) as u64;
