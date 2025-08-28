@@ -7,10 +7,10 @@ draft = true
 categories = ["rust", "kernel", "x86_64"]
 +++
 
-Next we will add a frame allocator, needed to do proper memory mapping which will result in us having the ability to add a heap allocator for our kernel. Allowing to use Rust's `alloc` crate, giving us access to `Vec` and more.
+Next we will add a frame allocator, needed to do proper memory mapping which will result in us having the ability to add a heap allocator for our kernel. Allowing us to use Rust's `alloc` crate, giving us access to `Vec` and more.
 
-To implement a frame allocator, need to know get a memory map, this map gives us the information of what regions of memory are usable by the kernel.
-Some regions of memory may be reserved by the bootloader, acpi, or simply bad memory due to hardware damage.
+To implement a frame allocator, need to get a memory map, this map gives us the information of what regions of memory are usable by the kernel.
+Some regions of memory may be reserved by the bootloader, ACPI, or simply bad memory due to hardware damage.
 
 We will also need the higher half mapping provided by limine. Limine maps for us all the contiguous physical memory starting at a given "virtual address" which we will call the physical memory offset, this is needed so we can access the level 4 page table. It also gives us an easy way to directly convert a physical address to virtual by simply adding the physical memory offset provided to us.
 
@@ -37,7 +37,6 @@ pub struct BootInfo {
     pub memory_map: &'static MemoryMapResponse,
     pub physical_memory_offset: VirtAddr,
 }
-
 
 #[unsafe(no_mangle)]
 unsafe extern "C" fn kmain() -> ! {
@@ -72,7 +71,10 @@ Next create a folder `memory/` where we will put memory related code.
 Inside create the `frame_allocator.rs` file and the relevant `pub mod frame_allocator;` in `mod.rs`. Also implement the `get_virt_addr` function which uses the physical memory offset to translate a physical address to virtual.
 
 ```rust
-// memory/mod.s
+// memory/mod.rs
+
+use x86_64::{PhysAddr, VirtAddr};
+use crate::boot_info;
 
 pub mod frame_allocator;
 
@@ -82,7 +84,7 @@ pub fn get_virt_addr(phys: PhysAddr) -> VirtAddr {
 }
 ```
 
-The allocator we will implement will be bitmap based:
+The allocator we will implement will be bitmap based. A bitmap allocator uses one bit per frame - 0 means the frame is free, 1 means it's allocated. This is simple and memory-efficient (just 1 bit per 4KB frame), though finding free frames requires a linear search which can be slow with lots of memory.
 
 ```rust
 /// Bitmap-based frame allocator
@@ -98,7 +100,7 @@ pub struct BitmapFrameAllocator {
 }
 ```
 
-First, we will need to find a place in memory to store the bitmap itself, to do this we will add a `find_bitmap_storage` method, that finds a contiguos memory region to
+First, we will need to find a place in memory to store the bitmap itself, to do this we will add a `find_bitmap_storage` method, that finds a contiguous memory region to
 place the bitmap storage.
 We can't use a fixed size bitmap because the memory map may have different sizes depending on the host total memory.
 
@@ -138,7 +140,7 @@ fn calculate_frame_range(memory_regions: &MemoryMapResponse) -> (PhysFrame, usiz
     (start_frame, frame_count as usize)
 }
 
- pub fn calculate_bitmap_size(memory_regions: &MemoryMapResponse) -> usize {
+pub fn calculate_bitmap_size(memory_regions: &MemoryMapResponse) -> usize {
         let (_, frame_count) = calculate_frame_range(memory_regions);
         frame_count.div_ceil(8) // Round up to nearest byte
     }
@@ -165,6 +167,10 @@ fn find_bitmap_storage(
         let virt_addr = get_virt_addr(phys_addr);
 
         unsafe {
+            // This is safe because:
+            // 1. We're using the HHDM mapping provided by limine
+            // 2. The physical memory is marked as usable by the bootloader
+            // 3. We're only accessing memory within the verified usable range
             let ptr = virt_addr.as_mut_ptr::<u8>();
             let storage = core::slice::from_raw_parts_mut(ptr, required_size);
             return Some((storage, current.start, required_size));
@@ -182,6 +188,7 @@ fn find_bitmap_storage(
                 let virt_addr = get_virt_addr(phys_addr);
 
                 unsafe {
+                    // Safe for the same reasons as above
                     let ptr = virt_addr.as_mut_ptr::<u8>();
                     let storage = core::slice::from_raw_parts_mut(ptr, required_size);
                     return Some((storage, current.start, required_size));
@@ -197,6 +204,7 @@ fn find_bitmap_storage(
                 let virt_addr = get_virt_addr(phys_addr);
 
                 unsafe {
+                    // Safe for the same reasons as above
                     let ptr = virt_addr.as_mut_ptr::<u8>();
                     let storage = core::slice::from_raw_parts_mut(ptr, required_size);
                     return Some((storage, current.start, required_size));
@@ -510,9 +518,18 @@ pub fn init_frame_allocator(memory_regions: &'static MemoryMapResponse) {
 }
 ```
 
-On the `main.rs` file, create a `init()` method:
+Don't forget to declare the memory module in your `main.rs`:
 
 ```rust
+mod memory;
+```
+
+On the `main.rs` file, create an `init()` method:
+
+```rust
+use x86_64::{instructions::hlt, structures::paging::FrameAllocator};
+use crate::memory::{frame_allocator::init_frame_allocator, frame_allocator::frame_allocator};
+
 fn init() {
     let info = boot_info();
     serial_println!("Initializing the frame allocator");
@@ -525,13 +542,48 @@ fn init() {
 And update the main
 
 ```rust
-
 fn main() -> ! {
     serial_println!("Booting...");
     init();
 
-    /// ...
+    // Test the frame allocator by showing some stats
+    let mut allocator = frame_allocator();
+    let stats = allocator.stats();
+    serial_println!("Frame allocator stats:");
+    serial_println!("  Total frames: {}", stats.total_frames);
+    serial_println!("  Free frames: {}", stats.free_frames);
+    serial_println!("  Allocated frames: {}", stats.allocated_frames);
+
+    // Allocate and deallocate a frame to test it works
+    if let Some(frame) = allocator.allocate_frame() {
+        serial_println!("Successfully allocated frame at: {:?}", frame.start_address());
+        unsafe {
+            allocator.deallocate_frame(frame);
+        }
+        serial_println!("Successfully deallocated frame");
+    }
+    drop(allocator); // Release the mutex
+
+    loop {
+        hlt();
+    }
 }
+```
+
+## Testing it out
+
+When you run the kernel now, you should see output like:
+
+```
+Booting...
+Initializing frame allocator
+Init done
+Frame allocator stats:
+  Total frames: 517606
+  Free frames: 512320
+  Allocated frames: 5286
+Successfully allocated frame at: PhysAddr(0x10000)
+Successfully deallocated frame
 ```
 
 ## Up next
