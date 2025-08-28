@@ -138,7 +138,7 @@ On x86_64, paging is achieved through the Memory Management Unit (MMU) using a s
 - 48-bit virtual addresses (using canonical addressing)
 - 4 KiB page size (typically)
 
-The 48-bit virtual addresses need to be canonical, that is, they have to be sign extended. Also there is a gap in virtual addresses that aren't due to this.
+The 48-bit virtual addresses need to be canonical, that is, they have to be sign extended. Also there is a gap in virtual addresses that aren't valid due to this.
 
 Each page table has 512 entries of 8 bytes each, requiring 9 bits to address each entry.
 
