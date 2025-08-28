@@ -32,14 +32,14 @@ the makefile also downloads the UEFI firmware ([OVMF](https://github.com/tianoco
 
 I also recommend creating a `.cargo` file inside the kernel folder with the following `config.toml`:
 
-```
+```toml
 [build]
 target = "x86_64-unknown-none"
 ```
 
 The `x86_64-unknown-none` is a baremetal target that fits perfectly to create a kernel.
 
-If you are using vscode i also recommend to create a `settings.json` with the following:
+If you are using vscode I also recommend to create a `settings.json` with the following:
 
 ```json
 {
