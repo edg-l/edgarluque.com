@@ -220,8 +220,6 @@ fn main() -> ! {
 
 #[panic_handler]
 fn rust_panic(info: &core::panic::PanicInfo) -> ! {
-    serial_println!("KERNEL PANIC:");
-    serial_println!("{info:#?}");
     loop {
         hlt();
     }
