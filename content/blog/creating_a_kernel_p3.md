@@ -12,7 +12,9 @@ Next we will add a frame allocator, needed to do proper memory mapping which wil
 To implement a frame allocator, need to know get a memory map, this map gives us the information of what regions of memory are usable by the kernel.
 Some regions of memory may be reserved by the bootloader, acpi, or simply bad memory due to hardware damage.
 
-This information can be provided by limine, by adding a `MemoryMapRequest` to `boot.rs`:
+We will also need the higher half mapping provided by limine. Limine maps for us all the contiguous physical memory starting at a given "virtual address" which we will call the physical memory offset, this is needed so we can access the level 4 page table. It also gives us an easy way to directly convert a physical address to virtual by simply adding the physical memory offset provided to us.
+
+This information can be provided by limine, by adding a `MemoryMapRequest` and a `HhdmRequest` to `boot.rs`:
 
 ```rust
 
@@ -22,12 +24,18 @@ This information can be provided by limine, by adding a `MemoryMapRequest` to `b
 #[unsafe(link_section = ".requests")]
 pub static MEMORY_MAP_REQUEST: MemoryMapRequest = MemoryMapRequest::new();
 
+// Request the higher-half direct mapping
+#[used]
+#[unsafe(link_section = ".requests")]
+pub static HHDM_REQUEST: HhdmRequest = HhdmRequest::new();
+
 // Add it to the boot info
 
 #[expect(unused)]
 pub struct BootInfo {
     pub framebuffer: Framebuffer<'static>,
     pub memory_map: &'static MemoryMapResponse,
+    pub physical_memory_offset: VirtAddr,
 }
 
 
@@ -40,9 +48,15 @@ unsafe extern "C" fn kmain() -> ! {
         .get_response()
         .expect("need the memory map");
 
+    let physical_memory_offset = HHDM_REQUEST
+    .get_response()
+    .expect("need higher half mapping")
+    .offset();
+
     let boot_info = BootInfo {
         framebuffer,
         memory_map,
+        physical_memory_offset,
     };
 
     BOOT_INFO.call_once(|| boot_info);
@@ -55,7 +69,18 @@ unsafe extern "C" fn kmain() -> ! {
 
 Next create a folder `memory/` where we will put memory related code.
 
-Inside create the `frame_allocator.rs` file and the relevant `pub mod frame_allocator;` in `mod.rs`
+Inside create the `frame_allocator.rs` file and the relevant `pub mod frame_allocator;` in `mod.rs`. Also implement the `get_virt_addr` function which uses the physical memory offset to translate a physical address to virtual.
+
+```rust
+// memory/mod.s
+
+pub mod frame_allocator;
+
+/// Get the virtual address from the given physical address
+pub fn get_virt_addr(phys: PhysAddr) -> VirtAddr {
+    boot_info().physical_memory_offset + phys.as_u64()
+}
+```
 
 The allocator we will implement will be bitmap based:
 
@@ -83,6 +108,7 @@ use x86_64::{
     PhysAddr,
     structures::paging::{FrameAllocator, PhysFrame, Size4KiB},
 };
+use crate::{memory::get_virt_addr, serial_println};
 
 /// Calculate the range of frames managed by this allocator. Tracking the minimum usable address and the maximum.
 ///
