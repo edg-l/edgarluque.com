@@ -1,18 +1,17 @@
 +++
-title = "Creating a x86_64 kernel in Rust: Part 1"
+title = "Creating an x86_64 kernel in Rust: Part 1"
 description = "My journey creating a x86_64 Rust kernel"
 date = 2025-08-28
-draft = true
 [taxonomies]
 categories = ["rust", "kernel", "x86_64"]
 +++
 
 This is some kind of blog series about my journey as I learn and implement my own Rust kernel.
 
-Any knowledge shared here may not be fully true, since i do this as a hobby and I'm not an experienced kernel developer.
+Any knowledge shared here may not be fully true, since I do this as a hobby and I'm not an experienced kernel developer.
 I'm just doing this for fun, learning about the true low level bits that make running a computer with the x86_64 architecture possible.
 
-Sometimes I will mention some names or mnemonics, and maybe i won't explain them here, but I always try to put relevant links to more information.
+Sometimes I will mention some names or mnemonics, and maybe I won't explain them here, but I always try to put relevant links to more information.
 After all, if you want to make a kernel, you will need to do research, **a lot**.
 
 I also won't be doing everything from scratch, for example I will use the `x86_64` crate for some interactions with registers, and the `acpi` crate to parse and use the ACPI tables.
@@ -24,7 +23,7 @@ I'll be using [limine](https://limine-bootloader.org/), for some reasons:
 
 - I like it. Feels simple and modern.
 - It provides a really nice [crate](https://crates.io/crates/limine) with a [template](https://github.com/jasondyoungberg/limine-rust-template) to create a kernel.
-- We have bootloader support with uefi out of the box.
+- We have bootloader support with UEFI out of the box, which is what most modern systems use (instead of the older BIOS).
 
 
 To start, go to the [template](https://github.com/jasondyoungberg/limine-rust-template) and clone it or use the template button.
@@ -34,7 +33,7 @@ the makefile also downloads the UEFI firmware ([OVMF](https://github.com/tianoco
 
 You should look a bit around at the makefile to understand it.
 
-I will only focus on x86_64 with UEFI, so i modified a bit the relevant runners (the one that uses cdrom and the one with hdd):
+I will only focus on x86_64 with UEFI, so I modified a bit the relevant runners (the one that uses cdrom and the one with hdd):
 
 
 ```make
@@ -77,7 +76,9 @@ With limine, you make "requests" to the bootloader to provide you with some info
 pub static FRAMEBUFFER_REQUEST: FramebufferRequest = FramebufferRequest::new();
 ```
 
-This works alongside the support of a custom linker script, which comes with the template:
+This works alongside the support of a custom linker script, which comes with the template.
+
+The linker script is needed because we need to tell the linker exactly where to put our requests in memory so that limine can find them. Without it, the linker might put our data anywhere, and limine wouldn't know where to look:
 
 ```
 .data : {
@@ -105,24 +106,27 @@ On the script, you will also see a relevant entry:
 . = 0xffffffff80000000;
 ```
 
-This puts our kernel in the higher half virtual address range, which can only be accessed in ring 0, it also buts the kernel at the very top 2gb range.
-Where it wont cause trouble later when we use some virtual address ranges.
+This puts our kernel in the higher half virtual address range, which can only be accessed in ring 0 (the highest privilege level where the kernel runs), it also puts the kernel at the very top 2gb range.
+
+The higher half approach is pretty common for kernels because it gives us some nice benefits: it protects the kernel from user programs (they can't access these addresses), and it makes memory management easier since we can map the kernel at the same virtual address in every process.
 
 ## Small intro to paging
 
-Paging main use, is to provide each process with its own "virtual address space".
+Paging's main use is to provide each process with its own "virtual address space".
 
 Virtual memory is divided into fixed-size blocks called pages, while physical memory is divided into equally sized page frames. Each page can be individually mapped to any frame, avoiding memory fragmentation.
 This will be the job of our frame allocator alongside the memory mapper.
 
 On x86_64, paging is achieved through the Memory Management Unit (MMU) using a series of tables:
 - 4-level page tables: PML4 -> PDPT -> PD -> PT
-- 48-bit virtual addresses (canonical addressing)
+- 48-bit virtual addresses (using canonical addressing)
 - 4 KiB page size (typically)
 
-The 48bit virtual addresses need to be canonical, that is, they have to be sign extended. Also there is a gap in virtual addresses that aren't valid
+The 48-bit virtual addresses need to be canonical, that is, they have to be sign extended. Also there is a gap in virtual addresses that aren't due to this.
 
 Each page table has 512 entries of 8 bytes each, requiring 9 bits to address each entry.
+
+When the CPU needs to translate a virtual address, it basically does this: takes the virtual address, splits it into chunks (9 bits for each level), and uses each chunk as an index to walk through the page tables until it finds the physical address. It's like following a path through multiple directories to find a file.
 
 To improve performance, x86_64 caches recent translations in the Translation Lookaside Buffer (TLB), allowing translations to skip the multi-level table walk when cached.
 The TLB must be manually invalidated by the kernel when page tables change using the `invlpg` instruction
@@ -138,7 +142,9 @@ See more:
 
 ## Reorganizing
 
-I moved most of the main.rs code to a file `boot.rs`, where I'll have most limine related stuff, the real entry point, which will call the main at `main.rs`.
+I moved most of the main.rs code to a `boot.rs` file, where I'll have most limine related stuff, the real entry point, which will call the main at `main.rs`.
+
+I did this because it's good to separate the boot logic from the actual kernel logic. The boot stuff is pretty specific to limine and getting everything set up, while main.rs should focus on the actual kernel functionality. Makes things cleaner and easier to understand.
 
 Also created a BootInfo struct alongside a global static `BOOT_INFO` to access it easily.
 
@@ -207,7 +213,7 @@ use x86_64::instructions::hlt;
 mod boot;
 
 fn main() -> ! {
-     loop {
+    loop {
         hlt();
     }
 }
@@ -223,9 +229,20 @@ fn rust_panic(info: &core::panic::PanicInfo) -> ! {
 
 ```
 
-`Once` comes from the spin crate, and hlt from the `x86_64`.
+`Once` comes from the spin crate (it's like a no_std OnceCell), and `hlt` from the `x86_64` crate.
+
+The `hlt` instruction is better than just doing `loop {}` because it actually puts the CPU to sleep until an interrupt happens, which saves power and doesn't waste CPU cycles.
 
 ```toml
 spin = "0.10.0"
 x86_64 = "0.15.2"
 ```
+
+## What's next?
+
+- Setting up a frame allocator
+- Creating a memory mapper
+- Initializing the kernel heap
+- Creating the GDT.
+- Handling interrupts and exceptions
+- Parsing the ACPI tables.
