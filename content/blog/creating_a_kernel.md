@@ -25,16 +25,32 @@ I'll be using [limine](https://limine-bootloader.org/), for some reasons:
 - It provides a really nice [crate](https://crates.io/crates/limine) with a [template](https://github.com/jasondyoungberg/limine-rust-template) to create a kernel.
 - We have bootloader support with UEFI out of the box, which is what most modern systems use (instead of the older BIOS).
 
-
 To start, go to the [template](https://github.com/jasondyoungberg/limine-rust-template) and clone it or use the template button.
 
 This template uses limine, and has a nice makefile to build and run the kernel under QEMU,
 the makefile also downloads the UEFI firmware ([OVMF](https://github.com/tianocore/tianocore.github.io/wiki/OVMF)) needed by QEMU to use UEFI.
 
+I also recommend creating a `.cargo` file inside the kernel folder with the following `config.toml`:
+
+```
+[build]
+target = "x86_64-unknown-none"
+```
+
+The `x86_64-unknown-none` is a baremetal target that fits perfectly to create a kernel.
+
+If you are using vscode i also recommend to create a `settings.json` with the following:
+
+```json
+{
+    "rust-analyzer.cargo.target": "x86_64-unknown-none",
+    "rust-analyzer.cargo.allTargets": false
+}
+```
+
 You should look a bit around at the makefile to understand it.
 
 I will only focus on x86_64 with UEFI, so I modified a bit the relevant runners (the one that uses cdrom and the one with hdd):
-
 
 ```make
 .PHONY: run-x86_64
