@@ -12,7 +12,9 @@ Next we will add a frame allocator, needed to do proper memory mapping which wil
 To implement a frame allocator, need to get a memory map, this map gives us the information of what regions of memory are usable by the kernel.
 Some regions of memory may be reserved by the bootloader, ACPI, or simply bad memory due to hardware damage.
 
-We will also need the higher half mapping provided by limine. Limine maps for us all the contiguous physical memory starting at a given "virtual address" which we will call the physical memory offset, this is needed so we can access the level 4 page table. It also gives us an easy way to directly convert a physical address to virtual by simply adding the physical memory offset provided to us.
+![](/img/memory_map_diagram.svg)
+
+We will also need the higher half mapping provided by limine. Limine maps for us all the **usable** physical memory starting at a given "virtual address" which we will call the physical memory offset, this is needed so we can access the level 4 page table. It also gives us an easy way to directly convert a physical address to virtual by simply adding the physical memory offset provided to us.
 
 This information can be provided by limine, by adding a `MemoryMapRequest` and a `HhdmRequest` to `boot.rs`:
 

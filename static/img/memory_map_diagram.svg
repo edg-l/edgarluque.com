@@ -1,0 +1,147 @@
+<svg viewBox="0 0 450 350" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="bad_memory" patternUnits="userSpaceOnUse" width="4" height="4">
+      <rect width="4" height="4" fill="#ff1744"/>
+    </pattern>
+    <pattern id="reserved" patternUnits="userSpaceOnUse" width="6" height="6">
+      <rect width="6" height="6" fill="#f44336"/>
+    </pattern>
+    <pattern id="bootloader_reclaimable" patternUnits="userSpaceOnUse" width="4" height="4">
+      <rect width="4" height="4" fill="#9c27b0"/>
+    </pattern>
+    <pattern id="executable" patternUnits="userSpaceOnUse" width="5" height="5">
+      <rect width="5" height="5" fill="#3f51b5"/>
+    </pattern>
+  </defs>
+
+  <!-- Title -->
+  <text x="250" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="#e0e0e0">
+    Typical 1GB x86_64 Memory Map
+  </text>
+
+  <!-- Memory regions (realistic 1GB layout) -->
+  <!-- Region 1: Low memory - Real Mode IVT, BDA (unusable/reserved) -->
+  <rect x="40" y="40" width="110" height="20" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
+  <text x="45" y="48" font-size="8" fill="#fff" font-weight="bold">0x0000_0000</text>
+  <text x="45" y="56" font-size="8" fill="#fff" font-weight="bold">RESERVED</text>
+  <text x="155" y="48" font-size="8" fill="#bbb">640KB</text>
+
+  <!-- Region 2: VGA/BIOS area (reserved) -->
+ <rect x="40" y="60" width="110" height="18" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
+  <text x="45" y="67" font-size="8" fill="#fff" font-weight="bold">0x000A_0000</text>
+  <text x="45" y="75" font-size="8" fill="#fff" font-weight="bold">RESERVED (VGA/BIOS)</text>
+  <text x="155" y="67" font-size="8" fill="#bbb">384KB</text>
+
+  <!-- Region 3: Extended BIOS area (reserved) -->
+  <rect x="40" y="78" width="110" height="15" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
+  <text x="45" y="84" font-size="8" fill="#fff" font-weight="bold">0x000F_0000</text>
+  <text x="45" y="91" font-size="8" fill="#fff" font-weight="bold">RESERVED</text>
+  <text x="155" y="84" font-size="8" fill="#bbb">64KB</text>
+
+  <!-- Region 4: Low usable memory -->
+  <rect x="40" y="93" width="110" height="20" fill="#4CAF50" stroke="#666" stroke-width="1"/>
+  <text x="45" y="101" font-size="8" fill="#fff" font-weight="bold">0x0010_0000</text>
+  <text x="45" y="109" font-size="8" fill="#fff" font-weight="bold">USABLE</text>
+  <text x="155" y="101" font-size="8" fill="#bbb">15MB</text>
+
+  <!-- Region 5: Kernel/modules -->
+  <rect x="40" y="113" width="110" height="25" fill="url(#executable)" stroke="#666" stroke-width="1"/>
+  <text x="45" y="123" font-size="8" fill="#fff" font-weight="bold">0x0100_0000</text>
+  <text x="45" y="133" font-size="8" fill="#fff" font-weight="bold">EXECUTABLE</text>
+  <text x="155" y="123" font-size="8" fill="#bbb">4MB</text>
+
+  <!-- Region 6: Bootloader data -->
+  <rect x="40" y="138" width="110" height="18" fill="url(#bootloader_reclaimable)" stroke="#666" stroke-width="1"/>
+  <text x="45" y="145" font-size="8" fill="#fff" font-weight="bold">0x0140_0000</text>
+  <text x="45" y="153" font-size="8" fill="#fff" font-weight="bold">BOOTLOADER</text>
+  <text x="155" y="145" font-size="8" fill="#bbb">1MB</text>
+
+  <!-- Region 7: Main RAM (largest usable region) -->
+  <rect x="40" y="156" width="110" height="80" fill="#4CAF50" stroke="#666" stroke-width="1"/>
+  <text x="45" y="168" font-size="8" fill="#fff" font-weight="bold">0x0150_0000</text>
+  <text x="45" y="178" font-size="8" fill="#fff" font-weight="bold">USABLE</text>
+  <text x="155" y="168" font-size="8" fill="#bbb">980MB</text>
+
+  <!-- Region 8: ACPI tables -->
+  <rect x="40" y="236" width="110" height="18" fill="#FF9800" stroke="#666" stroke-width="1"/>
+  <text x="45" y="243" font-size="8" fill="#fff" font-weight="bold">0x3F00_0000</text>
+  <text x="45" y="251" font-size="8" fill="#fff" font-weight="bold">ACPI_RECLAIM</text>
+  <text x="155" y="243" font-size="8" fill="#bbb">128KB</text>
+
+  <!-- Region 9: ACPI NVS -->
+  <rect x="40" y="254" width="110" height="15" fill="#795548" stroke="#666" stroke-width="1"/>
+  <text x="45" y="260" font-size="8" fill="#fff" font-weight="bold">0x3F02_0000</text>
+  <text x="45" y="267" font-size="8" fill="#fff" font-weight="bold">ACPI_NVS</text>
+  <text x="155" y="260" font-size="8" fill="#bbb">64KB</text>
+
+  <!-- Region 10: Framebuffer -->
+  <rect x="40" y="269" width="110" height="20" fill="#FF5722" stroke="#666" stroke-width="1"/>
+  <text x="45" y="277" font-size="8" fill="#fff" font-weight="bold">0x3F03_0000</text>
+  <text x="45" y="285" font-size="8" fill="#fff" font-weight="bold">FRAMEBUFFER</text>
+  <text x="155" y="277" font-size="8" fill="#bbb">8MB</text>
+
+  <!-- Region 11: High reserved (chipset, etc.) -->
+  <rect x="40" y="289" width="110" height="25" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
+  <text x="45" y="299" font-size="8" fill="#fff" font-weight="bold">0x3F80_0000</text>
+  <text x="45" y="309" font-size="8" fill="#fff" font-weight="bold">RESERVED</text>
+  <text x="155" y="299" font-size="8" fill="#bbb">8MB</text>
+
+  <!-- Arrow pointing up -->
+  <path d="M25 305 L25 50" stroke="#999" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#999"/>
+    </marker>
+  </defs>
+  <text x="10" y="180" font-size="10" fill="#999" transform="rotate(-90, 10, 180)">Physical Memory</text>
+
+  <!-- Legend -->
+  <g transform="translate(200, 50)">
+    <text x="0" y="0" font-size="12" font-weight="bold" fill="#e0e0e0">Limine EntryType Values</text>
+
+    <rect x="0" y="15" width="12" height="10" fill="#4CAF50" stroke="#666"/>
+    <text x="17" y="23" font-size="10" fill="#e0e0e0">USABLE (0) - Available for allocation</text>
+
+    <rect x="0" y="28" width="12" height="10" fill="url(#reserved)" stroke="#666"/>
+    <text x="17" y="36" font-size="10" fill="#e0e0e0">RESERVED (1) - Permanently reserved</text>
+
+    <rect x="0" y="41" width="12" height="10" fill="#FF9800" stroke="#666"/>
+    <text x="17" y="49" font-size="10" fill="#e0e0e0">ACPI_RECLAIMABLE (2) - Can free after ACPI init</text>
+
+    <rect x="0" y="54" width="12" height="10" fill="#795548" stroke="#666"/>
+    <text x="17" y="62" font-size="10" fill="#e0e0e0">ACPI_NVS (3) - ACPI Non-Volatile Storage</text>
+
+    <rect x="0" y="67" width="12" height="10" fill="url(#bad_memory)" stroke="#666"/>
+    <text x="17" y="75" font-size="10" fill="#e0e0e0">BAD_MEMORY (4) - Unusable due to damage</text>
+
+    <rect x="0" y="80" width="12" height="10" fill="url(#bootloader_reclaimable)" stroke="#666"/>
+    <text x="17" y="88" font-size="10" fill="#e0e0e0">BOOTLOADER_RECLAIMABLE (5) - Free after boot</text>
+
+    <rect x="0" y="93" width="12" height="10" fill="url(#executable)" stroke="#666"/>
+    <text x="17" y="101" font-size="10" fill="#e0e0e0">EXECUTABLE_AND_MODULES (6) - Kernel/modules</text>
+
+    <rect x="0" y="106" width="12" height="10" fill="#FF5722" stroke="#666"/>
+    <text x="17" y="114" font-size="10" fill="#e0e0e0">FRAMEBUFFER (7) - Graphics memory</text>
+  </g>
+
+  <!-- Frame allocator guidance -->
+  <g transform="translate(200, 180)">
+    <text x="0" y="0" font-size="12" font-weight="bold" fill="#e0e0e0">Frame Allocator Strategy</text>
+
+    <text x="0" y="18" font-size="10" fill="#e0e0e0" font-weight="bold">Immediately Usable:</text>
+    <text x="0" y="30" font-size="9" fill="#bbb">• USABLE (0) - Primary allocation source (~995MB)</text>
+
+    <text x="0" y="48" font-size="10" fill="#e0e0e0" font-weight="bold">Can Be Reclaimed Later:</text>
+    <text x="0" y="60" font-size="9" fill="#bbb">• ACPI_RECLAIMABLE (2) - After ACPI init (~128KB)</text>
+    <text x="0" y="72" font-size="9" fill="#bbb">• BOOTLOADER_RECLAIMABLE (5) - After boot complete (~1MB)</text>
+
+    <text x="0" y="90" font-size="10" fill="#e0e0e0" font-weight="bold">Never Use:</text>
+    <text x="0" y="102" font-size="9" fill="#bbb">• RESERVED (1) - Hardware/firmware (~8.4MB)</text>
+    <text x="0" y="114" font-size="9" fill="#bbb">• ACPI_NVS (3) - ACPI permanent (~64KB)</text>
+    <text x="0" y="126" font-size="9" fill="#bbb">• BAD_MEMORY (4) - Physical damage (~640KB)</text>
+    <text x="0" y="138" font-size="9" fill="#bbb">• EXECUTABLE_AND_MODULES (6) - Kernel code (~4MB)</text>
+    <text x="0" y="150" font-size="9" fill="#bbb">• FRAMEBUFFER (7) - Graphics memory (~8MB)</text>
+
+    <text x="0" y="170" font-size="10" fill="#4CAF50" font-weight="bold">Total Available: ~996MB for the kernel</text>
+  </g>
+</svg>

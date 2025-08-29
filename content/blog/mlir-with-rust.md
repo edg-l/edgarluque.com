@@ -266,7 +266,7 @@ assert!(module.as_operation().verify());
 
 This code generates the following MLIR IR:
 
-```mlir
+```
 module {
   func.func @foo() {
     %c0 = arith.constant 0 : index
