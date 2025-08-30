@@ -1,8 +1,7 @@
 +++
 title = "Creating an x86_64 kernel in Rust: Part 2"
 description = "Adding serial output."
-date = 2025-08-29
-draft = true
+date = 2025-08-30
 [taxonomies]
 categories = ["rust", "kernel", "x86_64"]
 +++
