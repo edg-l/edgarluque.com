@@ -9,13 +9,16 @@
     <meta property="og:title" content="{{ config.title }}" />
     <meta property="og:description" content="{{ config.description }}" />
     <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ current_url }}" />
+    <link rel="canonical" href="{{ current_url }}" />
+    <meta name="twitter:card" content="summary" />
     <meta property="twitter:title" content="{{ config.title }}" />
     <meta property="twitter:description" content="{{ config.description }}" />
     {% endblock %}
     <meta property="twitter:creator" content="@edgluq" />
     <meta property="twitter:site" content="@edgluq" />
     <title>{% block title %}{{ config.title }}{% endblock %}</title>
-    <link rel="stylesheet" href="/style.css?v=4" />
+    <link rel="stylesheet" href="/style.css?v=5" />
     {% block rss %}
     <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
     {% endblock %}
@@ -23,6 +26,7 @@
   </head>
 
   <body>
+    <a href="#content" class="skip-link">Skip to content</a>
     <header class="container">
       <a href="/" class="title"><p class="brand-title">Edgar Luque's Website</p></a>
       <ul class="nav">
@@ -43,19 +47,36 @@
           >
         </li>
         <li>
-          <a href="https://github.com/edg-l" title="My GitHub profile"
+          <a href="https://github.com/edg-l" title="My GitHub profile" rel="me"
             >GitHub</a
           >
         </li>
       </ul>
     </header>
-    <section class="section container">
+    <section class="section container" id="content">
       {% block content %} {% endblock %}
     </section>
 
     <section class="section container footer">
-        <p>Copyright &copy; 2019-2025 Edgar Luque</p>
+        <p>Copyright &copy; 2019-{{ now() | date(format="%Y") }} Edgar Luque</p>
         <p>This page is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)</a>.</p>
     </section>
+
+    <script>
+    document.querySelectorAll('pre').forEach(function(pre) {
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', function() {
+        var code = pre.querySelector('code');
+        var text = code ? code.textContent : pre.textContent;
+        navigator.clipboard.writeText(text).then(function() {
+          btn.textContent = 'Copied!';
+          setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+        });
+      });
+      pre.appendChild(btn);
+    });
+    </script>
   </body>
 </html>
