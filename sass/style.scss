@@ -179,7 +179,7 @@ blockquote {
 .container {
   margin: 10px auto;
   margin-top: 0;
-  padding-top: 10px;
+  padding-top: 40px;
   max-width: $breakpoint;
   @media screen and (max-width: $breakpoint) {
     max-width: 100%;
@@ -201,6 +201,18 @@ ul.posts {
   padding: 0;
   margin: 0;
   margin-top: 5px;
+
+  .year-heading h3 {
+    border-bottom: none;
+    margin-top: 1.2em;
+    margin-bottom: 0.3em;
+    font-size: 1.1em;
+    opacity: 0.7;
+  }
+
+  .year-heading:first-child h3 {
+    margin-top: 0;
+  }
 }
 
 ul.categories {
@@ -223,7 +235,7 @@ a.title {
 }
 
 .blog-date {
-  text-align: right;
+  text-align: left;
 }
 
 .capitalize {
@@ -267,8 +279,14 @@ th, td {
 
 tr:nth-child(even) {background-color: #1b2127;}
 
+.content {
+  margin-bottom: 2em;
+}
+
 .footer {
-  border-top: 2px $accent solid
+  border-top: 2px $accent solid;
+  padding: 1.5em 0;
+  opacity: 0.6;
 }
 
 .skip-link {

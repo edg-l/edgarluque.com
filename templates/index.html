@@ -29,7 +29,13 @@
 {% set section = get_section(path="blog/_index.md") %}
 <h2>Articles</h2>
 <ul class="posts">
+  {% set current_year = 0 %}
   {% for page in section.pages %}
+  {% set post_year = page.date | date(format="%Y") | int %}
+  {% if post_year != current_year %}
+  {% set_global current_year = post_year %}
+  <li class="year-heading"><h3>{{ post_year }}</h3></li>
+  {% endif %}
   <li>
     <span><time datetime="{{ page.date }}">{{ page.date }}</time> - </span>
     <a href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
