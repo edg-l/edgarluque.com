@@ -59,7 +59,7 @@
 
 <p><iframe src="https://github.com/sponsors/edg-l/button" title="Sponsor edg-l" height="32"
   width="114" style="border: 0; border-radius: 6px; display: inline-block; vertical-align: middle;"></iframe>
-<a href="https://liberapay.com/edgl/donate">
+<a href="https://liberapay.com/edgl/donate" data-umami-event="sponsor-liberapay">
   <img style="display: inline-block; vertical-align: middle;" alt="Donate using Liberapay"
     src="https://liberapay.com/assets/widgets/donate.svg">
 </a></p>
@@ -67,12 +67,12 @@
 <nav class="post-nav">
   {% if page.earlier %}
   <div class="prev">
-    &larr; <a href="{{ page.earlier.permalink }}">{{ page.earlier.title }}</a>
+    &larr; <a href="{{ page.earlier.permalink }}" data-umami-event="post-nav-prev">{{ page.earlier.title }}</a>
   </div>
   {% endif %}
   {% if page.later %}
   <div class="next">
-    <a href="{{ page.later.permalink }}">{{ page.later.title }}</a> &rarr;
+    <a href="{{ page.later.permalink }}" data-umami-event="post-nav-next">{{ page.later.title }}</a> &rarr;
   </div>
   {% endif %}
 </nav>
