@@ -30,9 +30,13 @@
   {% set_global current_year = post_year %}
   <li class="year-heading"><h3>{{ post_year }}</h3></li>
   {% endif %}
-  <li>
-    <span><time datetime="{{ page.date }}">{{ page.date }}</time> - </span>
-    <a href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
+  <li class="post-row">
+    <span class="post-date"><time datetime="{{ page.date }}">{{ page.date }}</time></span>
+    <a href="{{ page.permalink }}" title="{{ page.description }}" class="post-link">{{ page.title }}</a>
+    <span class="post-meta">
+      {% if page.taxonomies.categories %}{% for category in page.taxonomies.categories %}<a class="cat-badge" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>{% endfor %}{% endif %}
+      <span class="post-time">{{ page.reading_time }} min</span>
+    </span>
   </li>
   {% endfor %}
 </ul>

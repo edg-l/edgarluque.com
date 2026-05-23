@@ -54,8 +54,13 @@ body {
     5. Improve text rendering
   */
 body {
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: $accent;
+  color: $bgcolor;
 }
 /*
     6. Improve media defaults
@@ -97,7 +102,7 @@ h6 {
   isolation: isolate;
 }
 
-$breakpoint: 900px;
+$breakpoint: 1080px;
 
 .title {
   font-size: 2em;
@@ -127,7 +132,7 @@ a {
 
 pre {
   position: relative;
-  padding: 10px;
+  padding: 14px 16px;
   overflow-x: auto;
   border-radius: 8px;
   margin: 1em 0;
@@ -137,6 +142,7 @@ pre {
     background-color: inherit;
     color: inherit;
     border: 0;
+    padding: 0;
   }
 
   .copy-btn {
@@ -159,9 +165,11 @@ pre {
 
 code {
   font-family: "JetBrains Mono Variable", "Courier New", monospace;
-  padding: 2px;
+  padding: 1px 5px;
   font-weight: 400;
   color: $code;
+  background: $codeblock;
+  border-radius: 3px;
 }
 
 code > span {
@@ -194,6 +202,66 @@ ul.nav {
     display: inline;
     padding: 0 5px;
   }
+  .nav-search {
+    position: relative;
+    display: inline-block;
+    text-transform: none;
+    margin-right: 4px;
+  }
+}
+
+#site-search {
+  background: $codeblock;
+  color: $color;
+  border: 1px solid $accent;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-family: inherit;
+  font-size: 0.85em;
+  width: 180px;
+  outline: none;
+  &:focus { border-color: $code; width: 240px; }
+  transition: width 0.15s, border-color 0.15s;
+}
+
+#site-search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  width: 360px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: $codeblock;
+  border: 1px solid $accent;
+  border-radius: 6px;
+  z-index: 50;
+  text-align: left;
+  font-size: 0.85em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+
+  .search-hit {
+    display: block;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(77, 117, 119, 0.4);
+    color: $color;
+    text-decoration: none;
+    &:hover, &:focus { background: rgba(122, 190, 194, 0.08); }
+    &:last-child { border-bottom: none; }
+  }
+  .search-hit-title {
+    color: $code;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .search-hit-snippet {
+    opacity: 0.7;
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+  .search-empty {
+    padding: 10px 12px;
+    opacity: 0.6;
+  }
 }
 
 ul.posts {
@@ -204,6 +272,8 @@ ul.posts {
 
   .year-heading h3 {
     border-bottom: none;
+    border-left: none;
+    padding-left: 0;
     margin-top: 1.2em;
     margin-bottom: 0.3em;
     font-size: 1.1em;
@@ -212,6 +282,49 @@ ul.posts {
 
   .year-heading:first-child h3 {
     margin-top: 0;
+  }
+
+  .post-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 4px 0;
+    flex-wrap: wrap;
+  }
+
+  .post-date {
+    opacity: 0.6;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+
+  .post-link {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .post-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8em;
+    opacity: 0.85;
+    white-space: nowrap;
+  }
+
+  .cat-badge {
+    display: inline-block;
+    border: 1px solid $accent;
+    border-radius: 3px;
+    padding: 1px 6px;
+    text-decoration: none;
+    color: $color;
+    text-transform: lowercase;
+    &:hover { border-color: $code; color: $code; }
+  }
+
+  .post-time {
+    opacity: 0.5;
   }
 }
 
@@ -226,11 +339,24 @@ a.title {
   text-decoration: none;
 }
 
+a.title {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand-logo {
+  width: 64px;
+  height: 64px;
+  display: block;
+  flex-shrink: 0;
+}
+
 .brand-title {
   font-size: 1.4rem;
   text-transform: uppercase;
   font-weight: bolder;
-  text-align: right;
   margin: 0;
 }
 
@@ -251,10 +377,20 @@ ul {
   margin-bottom: 10px;
 }
 
-h1,h2 {
-  border-bottom: 2px $color solid;
-  border-bottom-color: $accent;
+h1, h2 {
+  border-bottom: 2px solid $accent;
   margin-bottom: 1rem;
+}
+
+h2 {
+  margin-top: 2em;
+}
+
+h3 {
+  margin-top: 1.6em;
+  margin-bottom: 0.6rem;
+  padding-left: 10px;
+  border-left: 3px solid $accent;
 }
 
 table {
@@ -320,4 +456,156 @@ tr:nth-child(even) {background-color: #1b2127;}
   padding-top: 1em;
   border-top: 2px solid $accent;
   .next { margin-left: auto; text-align: right; }
+}
+
+.series-nav {
+  border: 1px solid $accent;
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin: 2em 0 1em;
+  background: $codeblock;
+  .series-head {
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin-bottom: 8px;
+    strong { color: $code; text-transform: capitalize; }
+  }
+  .series-list {
+    margin: 0;
+    padding-left: 1.4em;
+    li { margin: 4px 0; }
+    a { text-decoration: none; &:hover { text-decoration: underline; } }
+  }
+  .series-current {
+    opacity: 0.7;
+    font-style: italic;
+  }
+}
+
+// Sticky TOC sidebar (created by blog-enhancements.js on wide screens)
+.toc-sidebar {
+  display: none;
+  @media screen and (min-width: 1100px) {
+    display: block;
+    position: fixed;
+    top: 80px;
+    right: max(16px, calc((100vw - #{$breakpoint}) / 2 - 220px));
+    width: 200px;
+    max-height: 70vh;
+    overflow-y: auto;
+    font-size: 0.85em;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    &:hover { opacity: 1; }
+    ul {
+      list-style: none;
+      padding-left: 0.8em;
+      margin: 0;
+    }
+    a {
+      text-decoration: none;
+      color: $color;
+      display: block;
+      padding: 2px 0;
+      border-left: 2px solid transparent;
+      padding-left: 8px;
+      margin-left: -10px;
+      &:hover { color: $code; }
+      &.active {
+        color: $code;
+        border-left-color: $code;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// Heading anchor copy icons
+.heading-anchor {
+  margin-left: 0.4em;
+  opacity: 0;
+  text-decoration: none;
+  color: $accent;
+  font-weight: normal;
+  transition: opacity 0.15s, color 0.15s;
+  &::after {
+    content: '';
+    display: none;
+  }
+  &.copied {
+    color: $code;
+    opacity: 1 !important;
+    &::after {
+      content: ' copied';
+      display: inline;
+      font-size: 0.7em;
+      opacity: 0.7;
+    }
+  }
+}
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+.heading-anchor:focus { opacity: 1; }
+
+// Net-zero filter demo widget
+.netzero-demo {
+  border: 1px solid $accent;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 1.5em 0;
+  background: $codeblock;
+
+  .netzero-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .netzero-btn {
+    background: transparent;
+    color: $color;
+    border: 1px solid $accent;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s;
+    &:hover { background: $accent; border-color: $code; }
+    .netzero-hint { opacity: 0.6; font-size: 0.85em; }
+  }
+  .netzero-btn-end { border-color: $code; }
+  .netzero-btn-reset { opacity: 0.7; }
+
+  .netzero-state {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    @media screen and (max-width: 700px) { grid-template-columns: 1fr; }
+  }
+  .netzero-col-head {
+    font-size: 0.8em;
+    opacity: 0.7;
+    margin-bottom: 4px;
+    color: $code;
+  }
+  .netzero-state pre {
+    margin: 0;
+    padding: 6px 8px;
+    background: $bgcolor;
+    border-radius: 4px;
+    border: 1px solid $accent;
+    font-size: 0.8em;
+    min-height: 1.6em;
+    .copy-btn { display: none; }
+  }
+
+  .netzero-log {
+    margin-top: 12px;
+    padding: 6px 10px;
+    font-size: 0.85em;
+    opacity: 0.85;
+    border-left: 3px solid $code;
+    font-family: inherit;
+  }
 }

@@ -3,15 +3,18 @@
 {% block title %}{{ page.title }}{% endblock content %}
 
 {% block seo %}
+{% set og_img = page.extra.og_image | default(value=get_url(path='og-default.png')) %}
 <meta name="description" content="{{ page.description }}" />
 <meta property="og:title" content="{{ page.title }}" />
 <meta property="og:description" content="{{ page.description }}" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="{{ page.permalink }}" />
+<meta property="og:image" content="{{ og_img }}" />
 <link rel="canonical" href="{{ page.permalink }}" />
-<meta name="twitter:card" content="summary" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta property="twitter:title" content="{{ page.title }}" />
 <meta property="twitter:description" content="{{ page.description }}" />
+<meta property="twitter:image" content="{{ og_img }}" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -55,6 +58,33 @@
 {% endif %}
 
 {{ page.content | safe }}
+
+{% if page.extra.series %}
+{% set series_name = page.extra.series %}
+{% set section = get_section(path="blog/_index.md") %}
+{% set_global series_pages = [] %}
+{% for sp in section.pages %}
+  {% if sp.extra and sp.extra.series == series_name %}
+    {% set_global series_pages = series_pages | concat(with=sp) %}
+  {% endif %}
+{% endfor %}
+{% if series_pages | length > 1 %}
+<aside class="series-nav">
+  <div class="series-head">Series: <strong>{{ series_name }}</strong> ({{ series_pages | length }} parts)</div>
+  <ol class="series-list">
+  {% for sp in series_pages %}
+    <li>
+      {% if sp.permalink == page.permalink %}
+        <span class="series-current">Part {{ sp.extra.series_part | default(value=loop.index) }} — {{ sp.title }} (this post)</span>
+      {% else %}
+        <a href="{{ sp.permalink }}">Part {{ sp.extra.series_part | default(value=loop.index) }} — {{ sp.title }}</a>
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ol>
+</aside>
+{% endif %}
+{% endif %}
 </article>
 
 <p>{% include "partials/sponsor.html" %}</p>

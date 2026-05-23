@@ -10,27 +10,43 @@
     <meta property="og:description" content="{{ config.description }}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ current_url }}" />
+    <meta property="og:image" content="{{ get_url(path='og-default.png') }}" />
     <link rel="canonical" href="{{ current_url }}" />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content="{{ config.title }}" />
     <meta property="twitter:description" content="{{ config.description }}" />
+    <meta property="twitter:image" content="{{ get_url(path='og-default.png') }}" />
     {% endblock %}
     <meta property="twitter:creator" content="@edgluq" />
     <meta property="twitter:site" content="@edgluq" />
     <title>{% block title %}{{ config.title }}{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ get_url(path='favicon.svg', cachebust=true) }}" />
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ get_url(path='icon-192.png', cachebust=true) }}" />
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ get_url(path='icon-512.png', cachebust=true) }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ get_url(path='apple-touch-icon.png', cachebust=true) }}" />
     <link rel="stylesheet" href="{{ get_url(path='style.css', cachebust=true) }}" />
     {% block rss %}
     <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path='atom.xml', trailing_slash=false) }}">
     {% endblock %}
     <script defer src="/u/script.js" data-website-id="38973eb3-c38a-4b9c-a314-d4627a649d60"></script>
     <script defer src="{{ get_url(path='js/copy.js', cachebust=true) }}"></script>
+    <script defer src="{{ get_url(path='js/elasticlunr.min.js', cachebust=true) }}"></script>
+    <script defer src="{{ get_url(path='search_index.en.js') }}"></script>
+    <script defer src="{{ get_url(path='js/blog-enhancements.js', cachebust=true) }}"></script>
   </head>
 
   <body>
     <a href="#content" class="skip-link">Skip to content</a>
     <header class="container">
-      <a href="/" class="title"><span class="brand-title">Edgar Luque's Website</span></a>
+      <a href="/" class="title">
+        <img class="brand-logo" src="{{ get_url(path='favicon.svg', cachebust=true) }}" alt="" aria-hidden="true" />
+        <span class="brand-title">Edgar Luque's Website</span>
+      </a>
       <ul class="nav">
+        <li class="nav-search">
+          <input type="search" id="site-search" placeholder="Search… (press /)" autocomplete="off" spellcheck="false" />
+          <div id="site-search-results" hidden></div>
+        </li>
         <li><a href="/categories">Categories</a></li>
         <li>
           <a href="/about" title="About me"

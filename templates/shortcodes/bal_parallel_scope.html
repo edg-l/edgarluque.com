@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 280" role="img" aria-labelledby="bal-scope-title bal-scope-desc" class="bal-scope">
+  <title id="bal-scope-title">Parallel scope on the validator path</title>
+  <desc id="bal-scope-desc">A single BAL input feeds three concurrent threads: warmer, EVM execution, and merkleizer. Their outputs converge into two gates: BAL access match and state root match.</desc>
+  <style>
+    .box-bal { fill: #0f1419; stroke: #7abec2; stroke-width: 2; }
+    .box-lane { fill: #0f1419; stroke: #4d7577; stroke-width: 1.5; }
+    .box-gate { fill: #0f1419; stroke: #E6E1CF; stroke-width: 1.5; }
+    .arrow { stroke: #4d7577; stroke-width: 1.5; fill: none; }
+    .label { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 13px; }
+    .label-bal { fill: #7abec2; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; text-anchor: middle; }
+    .label-fn { fill: #7abec2; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+    .label-out { fill: #E6E1CF; opacity: 0.75; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+    .label-gate { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 12px; text-anchor: middle; }
+    .scope-frame { fill: none; stroke: #4d7577; stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.5; }
+    .scope-label { fill: #E6E1CF; opacity: 0.5; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+  </style>
+  <defs>
+    <marker id="bal-arr" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="strokeWidth" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4d7577"/>
+    </marker>
+  </defs>
+  <rect x="20" y="105" width="90" height="70" rx="6" class="box-bal" />
+  <text x="65" y="146" class="label-bal">BAL</text>
+  <rect x="170" y="40"  width="320" height="44" rx="6" class="box-lane" />
+  <rect x="170" y="118" width="320" height="44" rx="6" class="box-lane" />
+  <rect x="170" y="196" width="320" height="44" rx="6" class="box-lane" />
+  <text x="184" y="60"  class="label">Warmer</text>
+  <text x="184" y="76"  class="label-fn">warm_block_from_bal</text>
+  <text x="184" y="138" class="label">EVM</text>
+  <text x="184" y="154" class="label-fn">LazyBalCursor (per tx, parallel)</text>
+  <text x="184" y="216" class="label">Merkleizer</text>
+  <text x="184" y="232" class="label-fn">synthesize_bal_updates → trie</text>
+  <rect x="155" y="20" width="350" height="240" rx="8" class="scope-frame" />
+  <text x="160" y="34" class="scope-label">std::thread::scope</text>
+  <path d="M 110 130 C 140 130, 140 62, 168 62"  class="arrow lane-in lane-in-warmer"    marker-end="url(#bal-arr)" />
+  <path d="M 110 140 L 168 140"                  class="arrow lane-in lane-in-evm"       marker-end="url(#bal-arr)" />
+  <path d="M 110 150 C 140 150, 140 218, 168 218" class="arrow lane-in lane-in-merkleize" marker-end="url(#bal-arr)" />
+  <path d="M 490 62  C 540 62, 540 110, 568 110" class="arrow lane-out lane-out-warmer"    marker-end="url(#bal-arr)" />
+  <path d="M 490 140 L 568 140"                  class="arrow lane-out lane-out-evm"       marker-end="url(#bal-arr)" />
+  <path d="M 490 218 C 540 218, 540 170, 568 170" class="arrow lane-out lane-out-merkleize" marker-end="url(#bal-arr)" />
+  <text x="495" y="58"  class="label-out">caches</text>
+  <text x="495" y="136" class="label-out">unread sets</text>
+  <text x="495" y="214" class="label-out">state root</text>
+  <rect x="568" y="95"  width="100" height="32" rx="6" class="box-gate gate-hash" />
+  <text x="618" y="115" class="label-gate">hash gate</text>
+  <rect x="568" y="153" width="100" height="32" rx="6" class="box-gate gate-root" />
+  <text x="618" y="173" class="label-gate">root gate</text>
+</svg>

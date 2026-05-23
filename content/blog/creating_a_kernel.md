@@ -4,6 +4,9 @@ description = "My journey creating a x86_64 Rust kernel"
 date = 2025-08-28
 [taxonomies]
 categories = ["rust", "kernel", "x86_64"]
+[extra]
+series = "kernel"
+series_part = 1
 +++
 
 This is some kind of blog series about my journey as I learn and implement my own Rust kernel.

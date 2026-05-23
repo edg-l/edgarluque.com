@@ -4,6 +4,9 @@ description = "Adding serial output."
 date = 2025-08-30
 [taxonomies]
 categories = ["rust", "kernel", "x86_64"]
+[extra]
+series = "kernel"
+series_part = 2
 +++
 
 ## Adding Serial output

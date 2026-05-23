@@ -5,6 +5,9 @@ date = 2025-08-30
 draft = true
 [taxonomies]
 categories = ["rust", "kernel", "x86_64"]
+[extra]
+series = "kernel"
+series_part = 3
 +++
 
 Next we will add a frame allocator, needed to do proper memory mapping which will result in us having the ability to add a heap allocator for our kernel. Allowing us to use Rust's `alloc` crate, giving us access to `Vec` and more.
