@@ -16,8 +16,8 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "{{ page.title }}",
-  "description": "{{ page.description }}",
+  "headline": {{ page.title | json_encode | safe }},
+  "description": {{ page.description | json_encode | safe }},
   "datePublished": "{{ page.date }}",
   "author": { "@type": "Person", "name": "Edgar Luque" },
   "url": "{{ page.permalink }}"
@@ -32,7 +32,7 @@
 </h1>
 
 <p class="blog-date">
-<strong><time datetime="{{ page.date }}">{{ page.date }}</time></strong> · {{ page.reading_time }} min read{% if page.taxonomies["categories"] %} · {% for category in page.taxonomies["categories"] %}<a class="category-link capitalize" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}"><i>{{ category }}</i></a>{% if not loop.last %} {% endif %}{% endfor %}{% endif %}
+<strong><time datetime="{{ page.date }}">{{ page.date }}</time></strong> · {{ page.reading_time }} min read{% if page.taxonomies.categories %} · {% for category in page.taxonomies.categories %}<a class="category-link capitalize" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}"><i>{{ category }}</i></a>{% if not loop.last %} {% endif %}{% endfor %}{% endif %}
 </p>
 
 {% if page.toc %}
@@ -57,12 +57,7 @@
 {{ page.content | safe }}
 </article>
 
-<p><iframe src="https://github.com/sponsors/edg-l/button" title="Sponsor edg-l" height="32"
-  width="114" style="border: 0; border-radius: 6px; display: inline-block; vertical-align: middle;"></iframe>
-<a href="https://liberapay.com/edgl/donate" data-umami-event="sponsor-liberapay">
-  <img style="display: inline-block; vertical-align: middle;" alt="Donate using Liberapay"
-    src="https://liberapay.com/assets/widgets/donate.svg">
-</a></p>
+<p>{% include "partials/sponsor.html" %}</p>
 
 <nav class="post-nav">
   {% if page.earlier %}

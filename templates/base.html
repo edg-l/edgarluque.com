@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +8,7 @@
     <meta name="description" content="{{ config.description }}" />
     <meta property="og:title" content="{{ config.title }}" />
     <meta property="og:description" content="{{ config.description }}" />
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ current_url }}" />
     <link rel="canonical" href="{{ current_url }}" />
     <meta name="twitter:card" content="summary" />
@@ -18,17 +18,18 @@
     <meta property="twitter:creator" content="@edgluq" />
     <meta property="twitter:site" content="@edgluq" />
     <title>{% block title %}{{ config.title }}{% endblock %}</title>
-    <link rel="stylesheet" href="/style.css?v=5" />
+    <link rel="stylesheet" href="{{ get_url(path='style.css', cachebust=true) }}" />
     {% block rss %}
-    <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path='atom.xml', trailing_slash=false) }}">
     {% endblock %}
     <script defer src="/u/script.js" data-website-id="38973eb3-c38a-4b9c-a314-d4627a649d60"></script>
+    <script defer src="{{ get_url(path='js/copy.js', cachebust=true) }}"></script>
   </head>
 
   <body>
     <a href="#content" class="skip-link">Skip to content</a>
     <header class="container">
-      <a href="/" class="title"><p class="brand-title">Edgar Luque's Website</p></a>
+      <a href="/" class="title"><span class="brand-title">Edgar Luque's Website</span></a>
       <ul class="nav">
         <li><a href="/categories">Categories</a></li>
         <li>
@@ -59,25 +60,8 @@
 
     <section class="section container footer">
         <p>Copyright &copy; 2019-{{ now() | date(format="%Y") }} Edgar Luque</p>
-        <p>This page is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)</a>.</p>
+        <p>This page is licensed under a <a href="https://creativecommons.org/licenses/by-nd/4.0/">Creative Commons Attribution-NoDerivatives 4.0 International License (CC BY-ND 4.0)</a>.</p>
     </section>
 
-    <script>
-    document.querySelectorAll('pre').forEach(function(pre) {
-      var btn = document.createElement('button');
-      btn.className = 'copy-btn';
-      btn.textContent = 'Copy';
-      btn.addEventListener('click', function() {
-        var code = pre.querySelector('code');
-        var text = code ? code.textContent : pre.textContent;
-        navigator.clipboard.writeText(text).then(function() {
-          if (typeof umami !== 'undefined') umami.track('code-copy');
-          btn.textContent = 'Copied!';
-          setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
-        });
-      });
-      pre.appendChild(btn);
-    });
-    </script>
   </body>
 </html>
