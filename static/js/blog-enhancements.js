@@ -3,7 +3,6 @@
 
   var thisScript = document.currentScript;
 
-  var RAIL_QUERY = '(min-width: 1400px)';
   var GUTTER_QUERY = '(min-width: 1200px)';
 
   // Blocks that are not part of the article's own body.
@@ -11,27 +10,10 @@
     var out = [];
     for (var i = 0; i < article.children.length; i++) {
       var el = article.children[i];
-      if (el.classList.contains('density-rail') || el.classList.contains('hex-gutter')) continue;
+      if (el.classList.contains('hex-gutter')) continue;
       if (el.offsetHeight > 0) out.push(el);
     }
     return out;
-  }
-
-  function blockKind(el) {
-    var tag = el.tagName;
-    if (tag === 'PRE' || tag === 'TABLE') return 'code';
-    if (tag === 'SVG' || tag === 'svg' || tag === 'FIGURE' || tag === 'IMG') return 'figure';
-    if (el.querySelector && el.querySelector('img, svg')) return 'figure';
-    return 'prose';
-  }
-
-  function onFrame(handler) {
-    var ticking = false;
-    return function () {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(function () { handler(); ticking = false; });
-    };
   }
 
   function debounce(handler, ms) {
@@ -40,102 +22,6 @@
       clearTimeout(t);
       t = setTimeout(handler, ms);
     };
-  }
-
-  // ---------- density rail: a scaled map of the article ----------
-  function setupDensityRail() {
-    var article = document.querySelector('article');
-    var toc = document.querySelector('details.toc');
-    if (!article || !toc || !window.matchMedia(RAIL_QUERY).matches) return;
-
-    var blocks = bodyBlocks(article);
-    if (blocks.length < 4) return;
-
-    var rail = document.createElement('nav');
-    rail.className = 'density-rail';
-    rail.setAttribute('aria-label', 'Article map');
-    rail.innerHTML =
-      '<div class="drail-map"></div>' +
-      '<div class="drail-side"><div class="drail-title"></div></div>';
-    article.appendChild(rail);
-    article.classList.add('has-rail');
-
-    var map = rail.querySelector('.drail-map');
-    var side = rail.querySelector('.drail-side');
-    var titleEl = rail.querySelector('.drail-title');
-    var window_ = document.createElement('div');
-    window_.className = 'dwindow';
-
-    var headings = [];
-    article.querySelectorAll('h2[id]').forEach(function (h) { headings.push(h); });
-
-    var articleTop = 0;
-    var articleHeight = 1;
-
-    function draw() {
-      var rect = article.getBoundingClientRect();
-      articleTop = rect.top + window.scrollY;
-      articleHeight = article.offsetHeight || 1;
-      var railH = map.clientHeight;
-      map.textContent = '';
-
-      var tops = blocks.map(function (el) {
-        return (el.getBoundingClientRect().top + window.scrollY - articleTop) / articleHeight * railH;
-      });
-      blocks.forEach(function (el, i) {
-        var top = tops[i];
-        var next = i + 1 < tops.length ? tops[i + 1] : railH;
-        var band = document.createElement('div');
-        band.className = 'dband dband-' + blockKind(el);
-        band.style.top = top + 'px';
-        band.style.height = Math.max(1, next - top) + 'px';
-        band.title = (el.textContent || '').trim().slice(0, 80);
-        map.appendChild(band);
-      });
-
-      headings.forEach(function (h) {
-        var top = (h.getBoundingClientRect().top + window.scrollY - articleTop) / articleHeight * railH;
-        var tick = document.createElement('div');
-        tick.className = 'dtick';
-        tick.style.top = top + 'px';
-        map.appendChild(tick);
-      });
-
-      map.appendChild(window_);
-      position();
-    }
-
-    function position() {
-      var railH = map.clientHeight;
-      var top = (window.scrollY - articleTop) / articleHeight * railH;
-      var h = window.innerHeight / articleHeight * railH;
-      var wtop = Math.max(0, Math.min(railH - 2, top));
-      window_.style.top = wtop + 'px';
-      window_.style.height = Math.max(2, Math.min(railH - wtop, h)) + 'px';
-      side.style.top = wtop + 'px';
-
-      var y = window.scrollY + 140;
-      var current = null;
-      for (var i = 0; i < headings.length; i++) {
-        if (headings[i].getBoundingClientRect().top + window.scrollY <= y) current = headings[i];
-      }
-      var label = current ? current.textContent.replace(/#$/, '').trim() : '';
-      if (titleEl.textContent !== label) titleEl.textContent = label;
-    }
-
-    map.addEventListener('click', function (e) {
-      var rect = map.getBoundingClientRect();
-      var ratio = (e.clientY - rect.top) / rect.height;
-      window.scrollTo({
-        top: articleTop + ratio * articleHeight - window.innerHeight / 2,
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-      });
-    });
-
-    window.addEventListener('scroll', onFrame(position), { passive: true });
-    window.addEventListener('resize', debounce(draw, 150));
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
-    draw();
   }
 
   // ---------- hex gutter: each block's offset in the article's text ----------
@@ -329,7 +215,6 @@
   }
 
   function init() {
-    setupDensityRail();
     setupHexGutter();
     setupHeadingAnchors();
     setupSearch();

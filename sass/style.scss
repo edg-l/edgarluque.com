@@ -58,11 +58,9 @@
   --step: 1.5rem;
 
   --gutter-w: 62px;
-  --rail-w: 200px;
 }
 
 $container: 1080px;
-$rail-at: 1400px;
 $gutter-at: 1200px;
 $narrow: 720px;
 
@@ -223,8 +221,8 @@ hr {
   text-transform: capitalize;
 }
 
-/* Machine surfaces: metadata, indices, navigation and the rails around the
-   article stay monospace. Prose does not. */
+/* Machine surfaces: metadata, indices, navigation and the article gutter stay
+   monospace. Prose does not. */
 .brand-name,
 .site-nav,
 .post-date,
@@ -236,7 +234,6 @@ hr {
 .toc,
 .series-nav,
 .hex-gutter,
-.density-rail,
 #site-search-results,
 .footer,
 .count {
@@ -653,13 +650,6 @@ ul.categories {
   }
 }
 
-/* Density rail: a scaled map of the article, built by blog-enhancements.js.
-   Each band is one block of the page, sized by its real height and coloured by
-   what it holds, so the shape of the post is visible before reading it. */
-.density-rail {
-  display: none;
-}
-
 /* Hex gutter: the offset of each block in the article's own character stream. */
 .hex-gutter {
   display: none;
@@ -686,84 +676,6 @@ ul.categories {
       white-space: nowrap;
       font-variant-numeric: tabular-nums;
     }
-  }
-}
-
-@media screen and (min-width: $rail-at) {
-  .density-rail {
-    display: block;
-    position: fixed;
-    top: 96px;
-    left: calc(50% + #{$container * 0.5} + 16px);
-    width: var(--rail-w);
-    font-size: 0.6875rem;
-    line-height: 1.4;
-  }
-
-  .drail-map {
-    position: relative;
-    width: 16px;
-    height: 64vh;
-    background: var(--panel);
-    outline: 1px solid var(--rule-soft);
-    border-radius: 3px;
-    overflow: hidden;
-    cursor: pointer;
-  }
-
-  .dband {
-    position: absolute;
-    left: 0;
-    width: 100%;
-  }
-
-  .dband-prose {
-    background: rgba(230, 225, 207, 0.22);
-  }
-
-  .dband-code {
-    background: rgba(122, 190, 194, 0.55);
-  }
-
-  .dband-figure {
-    background: rgba(77, 117, 119, 0.85);
-  }
-
-  .dtick {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: var(--bg);
-  }
-
-  .dwindow {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    min-height: 3px;
-    box-shadow: inset 0 0 0 1px var(--cyan);
-    background: rgba(122, 190, 194, 0.22);
-    pointer-events: none;
-  }
-
-  /* The label tracks the viewport marker, so it always reads as a caption
-     for where you are rather than a heading for the whole map. */
-  .drail-side {
-    position: absolute;
-    top: 0;
-    left: 28px;
-    width: calc(var(--rail-w) - 28px);
-    padding-left: 8px;
-    border-left: 1px solid var(--rule-soft);
-  }
-
-  .drail-title {
-    color: var(--muted);
-  }
-
-  .has-rail > details.toc {
-    display: none;
   }
 }
 
