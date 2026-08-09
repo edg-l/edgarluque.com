@@ -7,6 +7,40 @@
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 
+/* iA Writer Quattro: a proportional face built on a monospace skeleton, so
+   prose and code share a texture instead of colliding. */
+@font-face {
+  font-family: 'iA Writer Quattro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/iAWriterQuattroS-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'iA Writer Quattro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/iAWriterQuattroS-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'iA Writer Quattro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/iAWriterQuattroS-Bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'iA Writer Quattro';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/iAWriterQuattroS-BoldItalic.woff2') format('woff2');
+}
+
 :root {
   --bg: #14191F;
   --fg: #E6E1CF;
@@ -17,13 +51,19 @@
   --rule: rgba(77, 119, 119, 0.45);
   --rule-soft: rgba(77, 119, 119, 0.22);
 
-  --font: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
-  --measure: 72ch;
+  /* Proportional for what you read, monospace for what the machine knows. */
+  --font: 'iA Writer Quattro', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  --measure: 68ch;
   --step: 1.5rem;
+
+  --gutter-w: 62px;
+  --rail-w: 200px;
 }
 
 $container: 1080px;
-$rail-at: 1560px;
+$rail-at: 1400px;
+$gutter-at: 1200px;
 $narrow: 720px;
 
 *,
@@ -183,6 +223,26 @@ hr {
   text-transform: capitalize;
 }
 
+/* Machine surfaces: metadata, indices, navigation and the rails around the
+   article stay monospace. Prose does not. */
+.brand-name,
+.site-nav,
+.post-date,
+.post-time,
+.cat-badge,
+.post-meta-line,
+.post-nav-label,
+.year-heading h3,
+.toc,
+.series-nav,
+.hex-gutter,
+.density-rail,
+#site-search-results,
+.footer,
+.count {
+  font-family: var(--font-mono);
+}
+
 /* ---------- layout ---------- */
 
 .container {
@@ -208,6 +268,7 @@ hr {
 /* Prose column capped at a readable measure; code, tables and diagrams
    break out to the full container width. */
 article {
+  position: relative;
   display: grid;
   grid-template-columns:
     [full-start text-start] min(var(--measure), 100%) [text-end]
@@ -282,7 +343,7 @@ article {
   border: 1px solid var(--rule);
   border-radius: 4px;
   padding: 3px 8px;
-  font-family: inherit;
+  font-family: var(--font-mono);
   font-size: 0.8125rem;
   letter-spacing: 0;
   text-transform: none;
@@ -592,53 +653,115 @@ ul.categories {
   }
 }
 
-/* Sticky TOC rail, built by blog-enhancements.js. Only shown when the
-   viewport has room for it beside the centred container, never over it. */
-.toc-sidebar {
+/* Density rail: a scaled map of the article, built by blog-enhancements.js.
+   Each band is one block of the page, sized by its real height and coloured by
+   what it holds, so the shape of the post is visible before reading it. */
+.density-rail {
   display: none;
+}
 
-  @media screen and (min-width: $rail-at) {
+/* Hex gutter: the offset of each block in the article's own character stream. */
+.hex-gutter {
+  display: none;
+}
+
+@media screen and (min-width: $gutter-at) {
+  .hex-gutter {
     display: block;
-    position: fixed;
-    top: 96px;
-    left: calc(50% + #{$container * 0.5} + 32px);
-    width: 200px;
-    max-height: 70vh;
-    overflow-y: auto;
-    font-size: 0.8125rem;
-    line-height: 1.45;
+    position: absolute;
+    top: 0;
+    left: calc(-1 * (var(--gutter-w) + 18px));
+    width: var(--gutter-w);
+    height: 100%;
+    font-size: 0.6875rem;
+    line-height: 1;
+    color: var(--muted);
+    opacity: 0.45;
+    user-select: none;
+    pointer-events: none;
 
-    ul {
-      list-style: none;
-      padding-left: 0.8em;
-      margin: 0;
-    }
-
-    > ul {
-      padding-left: 0;
-    }
-
-    a {
-      display: block;
-      padding: 3px 0 3px 10px;
-      margin-left: -2px;
-      text-decoration: none;
-      color: var(--muted);
-      border-left: 2px solid transparent;
-
-      &:hover {
-        color: var(--fg);
-      }
-
-      &.active {
-        color: var(--cyan);
-        border-left-color: var(--cyan);
-      }
+    span {
+      position: absolute;
+      right: 0;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
   }
 }
 
 @media screen and (min-width: $rail-at) {
+  .density-rail {
+    display: block;
+    position: fixed;
+    top: 96px;
+    left: calc(50% + #{$container * 0.5} + 16px);
+    width: var(--rail-w);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+  }
+
+  .drail-map {
+    position: relative;
+    width: 16px;
+    height: 64vh;
+    background: var(--panel);
+    outline: 1px solid var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .dband {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
+
+  .dband-prose {
+    background: rgba(230, 225, 207, 0.22);
+  }
+
+  .dband-code {
+    background: rgba(122, 190, 194, 0.55);
+  }
+
+  .dband-figure {
+    background: rgba(77, 117, 119, 0.85);
+  }
+
+  .dtick {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--bg);
+  }
+
+  .dwindow {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    min-height: 3px;
+    box-shadow: inset 0 0 0 1px var(--cyan);
+    background: rgba(122, 190, 194, 0.22);
+    pointer-events: none;
+  }
+
+  /* The label tracks the viewport marker, so it always reads as a caption
+     for where you are rather than a heading for the whole map. */
+  .drail-side {
+    position: absolute;
+    top: 0;
+    left: 28px;
+    width: calc(var(--rail-w) - 28px);
+    padding-left: 8px;
+    border-left: 1px solid var(--rule-soft);
+  }
+
+  .drail-title {
+    color: var(--muted);
+  }
+
   .has-rail > details.toc {
     display: none;
   }
@@ -673,6 +796,7 @@ h3:hover .heading-anchor,
 
 pre {
   position: relative;
+  font-family: var(--font-mono);
   padding: 14px 16px;
   overflow-x: auto;
   border-radius: 8px;
@@ -710,7 +834,7 @@ pre {
 }
 
 code {
-  font-family: var(--font);
+  font-family: var(--font-mono);
   font-size: 0.9375em;
   padding: 1px 5px;
   color: var(--cyan);
