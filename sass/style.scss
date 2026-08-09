@@ -54,7 +54,6 @@
   /* Proportional for what you read, monospace for what the machine knows. */
   --font: 'iA Writer Quattro', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
-  --measure: 68ch;
   --step: 1.5rem;
 
   --gutter-w: 62px;
@@ -262,26 +261,10 @@ hr {
   padding-bottom: 3rem;
 }
 
-/* Prose column capped at a readable measure; code, tables and diagrams
-   break out to the full container width. */
+/* Prose, code, tables and diagrams all share the container width, so text
+   wraps on the same column the code blocks occupy. */
 article {
   position: relative;
-  display: grid;
-  grid-template-columns:
-    [full-start text-start] min(var(--measure), 100%) [text-end]
-    minmax(0, 1fr) [full-end];
-
-  > * {
-    grid-column: text;
-  }
-
-  > pre,
-  > table,
-  > figure,
-  > p:has(> img),
-  > p:has(> a > img) {
-    grid-column: full;
-  }
 }
 
 /* ---------- header ---------- */
@@ -412,7 +395,6 @@ article {
 
 .lede {
   color: var(--muted);
-  max-width: var(--measure);
   margin-bottom: 2rem;
 }
 
