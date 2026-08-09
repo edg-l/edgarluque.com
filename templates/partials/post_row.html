@@ -2,9 +2,13 @@
   <time class="post-date" datetime="{{ page.date }}">{{ page.date }}</time>
   <a class="post-link" href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
   <span class="post-meta">
+    {#- On a category page the term is already the heading, so it is not repeated on every row. -#}
+    {%- set skip_category = current_term | default(value="") -%}
     {%- if page.taxonomies.categories -%}
     {%- for category in page.taxonomies.categories -%}
+    {%- if category != skip_category -%}
     <a class="cat-badge" href="{{ get_taxonomy_url(kind='categories', name=category) | safe }}">{{ category }}</a>
+    {%- endif -%}
     {%- endfor -%}
     {%- endif -%}
     <span class="post-time">{{ page.reading_time }} min</span>

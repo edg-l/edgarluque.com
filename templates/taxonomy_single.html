@@ -14,6 +14,7 @@
 
 <h1 class="page-title capitalize">{{ term.name }} articles</h1>
 
+{% set_global current_term = term.name %}
 <ul class="posts">
   {% for page in term.pages %}
   {% include "partials/post_row.html" %}
