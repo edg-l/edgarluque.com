@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 210" role="img" aria-labelledby="t d">
+  <title id="t">One e-class holding four competing forms, beside a class holding one</title>
+  <desc id="d">The class for a plus b holds four forms: add priced at infinity because it has no encoding, proj0 of x86_add, an addressing mode with scale 1, and x86_lea2. Extraction takes the addressing mode at cost zero, and because nothing consumes it as memory the lowering emits a lea. The neighbouring class for parameter a holds a single node, so extraction has nothing to decide, and 71 percent of the classes in the corpus look like that one.</desc>
+  <style>
+    text { font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; fill: #E6E1CF; }
+    .heading { font-size: 13px; font-weight: 600; }
+    .node { font-size: 12px; }
+    .note { font-size: 11px; fill: #E6E1CF; opacity: 0.75; }
+    .dim { font-size: 11px; fill: #E6E1CF; opacity: 0.5; }
+    .picked { fill: #7abec2; font-weight: 600; }
+    .class-box { fill: #0f1419; stroke: #4d7577; stroke-width: 1; }
+    .class-box.single { stroke-dasharray: 4 3; }
+    .pick-box { fill: none; stroke: #7abec2; stroke-width: 1.5; }
+    .arrow { stroke: #4d7577; stroke-width: 1.5; fill: none; }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#4d7577"/>
+    </marker>
+  </defs>
+
+  <text class="heading" x="0" y="14">class 2 &#183; the value of a + b</text>
+  <rect class="class-box" x="0" y="26" width="300" height="128" rx="3"/>
+  <text class="node" x="16" y="50">add(a, b)</text>
+  <text class="dim" x="212" y="50">cost inf</text>
+  <text class="node" x="16" y="76">proj0(x86_add)</text>
+  <text class="dim" x="212" y="76">cost 0</text>
+  <rect class="pick-box" x="8" y="86" width="284" height="30" rx="3"/>
+  <text class="node picked" x="16" y="106">addr(scale=1)</text>
+  <text class="dim" x="212" y="106">cost 0</text>
+  <text class="node" x="16" y="132">x86_lea2(a, b)</text>
+  <text class="dim" x="212" y="132">cost 1.9</text>
+  <text class="note" x="0" y="178">extraction takes the addressing mode,</text>
+  <text class="note" x="0" y="194">and nothing consumes it as memory</text>
+
+  <path class="arrow" d="M316,104 L386,104" marker-end="url(#head)"/>
+  <text class="note" x="318" y="94">lower</text>
+  <text class="node picked" x="406" y="116">lea rax,[rdi+rsi*1]</text>
+  <text class="note" x="406" y="136">so the address gets materialized</text>
+
+  <text class="heading" x="406" y="14">class 0 &#183; parameter a</text>
+  <rect class="class-box single" x="406" y="26" width="274" height="42" rx="3"/>
+  <text class="node" x="422" y="52">Param(0, I64)</text>
+  <text class="note" x="406" y="88">nothing to decide here, and 71% of</text>
+  <text class="note" x="406" y="104">the classes in the corpus are this shape</text>
+</svg>
