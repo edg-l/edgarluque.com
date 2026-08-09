@@ -39,7 +39,7 @@
         font-size="28"
         font-weight="400"
         fill="#7abec2"
-        text-anchor="middle">Software developer, Ethereum core dev</text>
+        text-anchor="middle">Software developer</text>
 
   <!-- Bottom-left footer line -->
   <text x="80" y="565"
