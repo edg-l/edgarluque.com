@@ -24,51 +24,37 @@
     <link rel="icon" type="image/png" sizes="192x192" href="{{ get_url(path='icon-192.png', cachebust=true) }}" />
     <link rel="icon" type="image/png" sizes="512x512" href="{{ get_url(path='icon-512.png', cachebust=true) }}" />
     <link rel="apple-touch-icon" sizes="180x180" href="{{ get_url(path='apple-touch-icon.png', cachebust=true) }}" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ get_url(path='fonts/jetbrains-mono-latin-wght-normal.woff2') }}" />
     <link rel="stylesheet" href="{{ get_url(path='style.css', cachebust=true) }}" />
     {% block rss %}
     <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path='atom.xml', trailing_slash=false) }}">
     {% endblock %}
     <script defer src="/u/script.js" data-website-id="38973eb3-c38a-4b9c-a314-d4627a649d60"></script>
     <script defer src="{{ get_url(path='js/copy.js', cachebust=true) }}"></script>
-    <script defer src="{{ get_url(path='js/elasticlunr.min.js', cachebust=true) }}"></script>
-    <script defer src="{{ get_url(path='search_index.en.js') }}"></script>
-    <script defer src="{{ get_url(path='js/blog-enhancements.js', cachebust=true) }}"></script>
+    <script defer src="{{ get_url(path='js/blog-enhancements.js', cachebust=true) }}"
+            data-search-lib="{{ get_url(path='js/elasticlunr.min.js', cachebust=true) }}"
+            data-search-index="{{ get_url(path='search_index.en.js') }}"></script>
   </head>
 
   <body>
     <a href="#content" class="skip-link">Skip to content</a>
-    <header class="container">
-      <a href="/" class="title">
+    <header class="container site-header">
+      <a href="/" class="brand">
         <img class="brand-logo" src="{{ get_url(path='favicon.svg', cachebust=true) }}" alt="" aria-hidden="true" />
-        <span class="brand-title">Edgar Luque's Website</span>
+        <span class="brand-name">Edgar Luque</span>
       </a>
-      <ul class="nav">
-        <li class="nav-search">
+      <nav class="site-nav" aria-label="Main">
+        <a href="/categories">Categories</a>
+        <a href="/about" title="About me">About</a>
+        <a href="/projects" title="Projects I created/contributed">Projects</a>
+        <a href="/misc" title="Miscellaneous stuff">Misc</a>
+        <a href="https://github.com/edg-l" title="My GitHub profile" rel="me">GitHub</a>
+        <span class="nav-search">
+          <label class="visually-hidden" for="site-search">Search the site</label>
           <input type="search" id="site-search" placeholder="Search… (press /)" autocomplete="off" spellcheck="false" />
           <div id="site-search-results" hidden></div>
-        </li>
-        <li><a href="/categories">Categories</a></li>
-        <li>
-          <a href="/about" title="About me"
-            >About</a
-          >
-        </li>
-        <li>
-          <a href="/projects" title="Projects I created/contributed"
-            >Projects</a
-          >
-        </li>
-        <li>
-          <a href="/misc" title="Miscellaneous stuff"
-            >Misc</a
-          >
-        </li>
-        <li>
-          <a href="https://github.com/edg-l" title="My GitHub profile" rel="me"
-            >GitHub</a
-          >
-        </li>
-      </ul>
+        </span>
+      </nav>
     </header>
     <section class="section container content" id="content">
       {% block content %} {% endblock %}

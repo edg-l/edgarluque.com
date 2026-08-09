@@ -1,0 +1,12 @@
+<li class="post-row">
+  <time class="post-date" datetime="{{ page.date }}">{{ page.date }}</time>
+  <a class="post-link" href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
+  <span class="post-meta">
+    {%- if page.taxonomies.categories -%}
+    {%- for category in page.taxonomies.categories -%}
+    <a class="cat-badge" href="{{ get_taxonomy_url(kind='categories', name=category) | safe }}">{{ category }}</a>
+    {%- endfor -%}
+    {%- endif -%}
+    <span class="post-time">{{ page.reading_time }} min</span>
+  </span>
+</li>

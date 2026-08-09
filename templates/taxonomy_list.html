@@ -4,13 +4,13 @@
 
 {% block content %}
 
-<h1 class="capitalize">{{ taxonomy.name }}</h1>
+<h1 class="page-title capitalize">{{ taxonomy.name }}</h1>
 <ul class="categories">
 {% for term in terms %}
 <li>
   <a href="{{ term.permalink }}" title="{{ term.name }}" class="capitalize"
     >{{ term.name }}</a
-  > <span style="color: rgb(150, 150, 150);">({{ term.page_count }})</span>
+  > <span class="count">({{ term.page_count }})</span>
 </li>
 {% endfor %}
 </ul>

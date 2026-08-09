@@ -1,12 +1,18 @@
 (function () {
   'use strict';
 
-  // ---------- #2: sticky TOC sidebar with scroll-spy ----------
+  var thisScript = document.currentScript;
+
+  // Widest viewport at which the rail would still overlap the centred
+  // container: 1080px container + 2 * (32px gap + 200px rail).
+  var RAIL_QUERY = '(min-width: 1560px)';
+
+  // ---------- sticky TOC rail with scroll-spy ----------
   function setupStickyToc() {
     var toc = document.querySelector('details.toc');
     var article = document.querySelector('article');
     if (!toc || !article) return;
-    if (window.matchMedia('(max-width: 1099px)').matches) return;
+    if (!window.matchMedia(RAIL_QUERY).matches) return;
 
     var sidebar = document.createElement('nav');
     sidebar.className = 'toc-sidebar';
@@ -15,6 +21,7 @@
     if (!list) return;
     sidebar.appendChild(list.cloneNode(true));
     article.appendChild(sidebar);
+    article.classList.add('has-rail');
 
     var links = sidebar.querySelectorAll('a[href^="#"]');
     if (!links.length) return;
@@ -70,17 +77,44 @@
   }
 
   // ---------- search ----------
+  // The engine and the index are ~440 KB of JavaScript, so they are fetched on
+  // the first interaction with the search box rather than on every page load.
   function setupSearch() {
     var input = document.getElementById('site-search');
     var results = document.getElementById('site-search-results');
     if (!input || !results) return;
-    if (typeof elasticlunr === 'undefined' || typeof window.searchIndex === 'undefined') {
-      input.placeholder = 'Search unavailable';
-      input.disabled = true;
-      return;
+
+    var libUrl = thisScript && thisScript.getAttribute('data-search-lib');
+    var indexUrl = thisScript && thisScript.getAttribute('data-search-index');
+    if (!libUrl || !indexUrl) return;
+
+    function loadScript(src) {
+      return new Promise(function (resolve, reject) {
+        var el = document.createElement('script');
+        el.src = src;
+        el.onload = resolve;
+        el.onerror = reject;
+        document.head.appendChild(el);
+      });
     }
 
-    var index = elasticlunr.Index.load(window.searchIndex);
+    var loading = null;
+    function load() {
+      if (!loading) {
+        loading = loadScript(libUrl)
+          .then(function () { return loadScript(indexUrl); })
+          .then(function () { return elasticlunr.Index.load(window.searchIndex); })
+          .catch(function () {
+            input.placeholder = 'Search unavailable';
+            input.disabled = true;
+            return null;
+          });
+      }
+      return loading;
+    }
+
+    input.addEventListener('focus', load, { once: true });
+    input.addEventListener('pointerdown', load, { once: true });
 
     function escapeHtml(s) {
       return s.replace(/[&<>"']/g, function (c) {
@@ -104,24 +138,17 @@
       return escapeHtml(text);
     }
 
-    function render(hits, query) {
-      if (!hits.length) {
-        results.innerHTML = '<div class="search-empty">No matches.</div>';
-      } else {
-        var html = '';
-        for (var i = 0; i < hits.length; i++) {
-          var h = hits[i];
-          var doc = h.doc;
-          if (!doc) continue;
-          var title = doc.title || h.ref;
-          var url = h.ref;
-          html += '<a class="search-hit" href="' + escapeHtml(url) + '">'
-            + '<div class="search-hit-title">' + escapeHtml(title) + '</div>'
-            + '<div class="search-hit-snippet">' + snippet(doc.body || '', query) + '</div>'
-            + '</a>';
-        }
-        results.innerHTML = html;
+    function render(index, hits, query) {
+      var html = '';
+      for (var i = 0; i < hits.length; i++) {
+        var h = hits[i];
+        var doc = index.documentStore.getDoc(h.ref) || {};
+        html += '<a class="search-hit" href="' + escapeHtml(h.ref) + '">'
+          + '<div class="search-hit-title">' + escapeHtml(doc.title || h.ref) + '</div>'
+          + '<div class="search-hit-snippet">' + snippet(doc.body || '', query) + '</div>'
+          + '</a>';
       }
+      results.innerHTML = html || '<div class="search-empty">No matches.</div>';
       results.hidden = false;
     }
 
@@ -131,12 +158,15 @@
         results.innerHTML = '';
         return;
       }
-      var hits = index.search(q, {
-        fields: { title: { boost: 3 }, body: { boost: 1 } },
-        expand: true,
-        bool: 'AND',
-      }).slice(0, 8);
-      render(hits, q);
+      load().then(function (index) {
+        if (!index || input.value.trim() !== q) return;
+        var hits = index.search(q, {
+          fields: { title: { boost: 3 }, body: { boost: 1 } },
+          expand: true,
+          bool: 'AND',
+        }).slice(0, 8);
+        render(index, hits, q);
+      });
     }
 
     var debounceTimer;

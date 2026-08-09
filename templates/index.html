@@ -1,27 +1,12 @@
 {% extends "base.html" %} {% block content %}
-<h1 class="title">Welcome to my website</h1>
-<p>
-  This is my personal website, where I post articles and other stuff, usually about coding. Opinions are my own.
+<h1 class="page-title">Systems programming, compilers, Ethereum clients.</h1>
+<p class="lede">
+  Notes and articles by Edgar Luque. Currently at
+  <a href="https://lambdaclass.com/">LambdaClass</a>. Opinions are my own.
 </p>
 
-<p>This blog has no ads, please consider sponsoring me, thanks! {% include "partials/sponsor.html" %}</p>
-
-<p>Socials: <a href="https://x.com/edgluq" rel="me" data-umami-event="social-twitter">Twitter (X)</a>,
-  <a href="https://bsky.app/profile/edg-l.bsky.social" rel="me" data-umami-event="social-bluesky">Bluesky</a>,
-  <a href="https://github.com/edg-l" rel="me" data-umami-event="social-github">GitHub</a>.</p>
-
-<p>Currently working at <a href="https://lambdaclass.com/">LambdaClass</a>.</p>
-
-<p>Some projects:
-  <a href="https://github.com/edg-l/edlang">edlang</a>,
-  <a href="https://github.com/edg-l/irvm">irvm</a>,
-  <a href="https://github.com/lambdaclass/concrete">concrete</a>,
-  <a href="https://wiki.ddnet.org">wiki.ddnet.org</a>,
-  <a href="https://ddstats.org/">ddstats.org</a>,
-  <a href="https://db.ddstats.org">db.ddstats.org</a> and <a href="/projects">more</a>.</p>
-
 {% set section = get_section(path="blog/_index.md") %}
-<h2>Articles</h2>
+<h2 class="visually-hidden">Articles</h2>
 <ul class="posts">
   {% set current_year = 0 %}
   {% for page in section.pages %}
@@ -30,17 +15,30 @@
   {% set_global current_year = post_year %}
   <li class="year-heading"><h3>{{ post_year }}</h3></li>
   {% endif %}
-  <li class="post-row">
-    <span class="post-date"><time datetime="{{ page.date }}">{{ page.date }}</time></span>
-    <a href="{{ page.permalink }}" title="{{ page.description }}" class="post-link">{{ page.title }}</a>
-    <span class="post-meta">
-      {% if page.taxonomies.categories %}{% for category in page.taxonomies.categories %}<a class="cat-badge" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>{% endfor %}{% endif %}
-      <span class="post-time">{{ page.reading_time }} min</span>
-    </span>
-  </li>
+  {% include "partials/post_row.html" %}
   {% endfor %}
 </ul>
 
-<p><a href="/atom.xml">RSS Feed</a></p>
+<div class="elsewhere">
+  <p>
+    <a href="/atom.xml">RSS feed</a> ·
+    <a href="https://x.com/edgluq" rel="me" data-umami-event="social-twitter">Twitter (X)</a> ·
+    <a href="https://bsky.app/profile/edg-l.bsky.social" rel="me" data-umami-event="social-bluesky">Bluesky</a> ·
+    <a href="https://github.com/edg-l" rel="me" data-umami-event="social-github">GitHub</a>
+  </p>
+  <p>
+    Some projects:
+    <a href="https://github.com/edg-l/edlang">edlang</a>,
+    <a href="https://github.com/edg-l/irvm">irvm</a>,
+    <a href="https://github.com/lambdaclass/concrete">concrete</a>,
+    <a href="https://wiki.ddnet.org">wiki.ddnet.org</a>,
+    <a href="https://ddstats.org/">ddstats.org</a>,
+    <a href="https://db.ddstats.org">db.ddstats.org</a> and <a href="/projects">more</a>.
+  </p>
+  <p class="sponsor-row">
+    <span>No ads here. Sponsoring keeps it that way:</span>
+    {% include "partials/sponsor.html" %}
+  </p>
+</div>
 
 {% endblock content %}

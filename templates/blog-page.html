@@ -30,12 +30,12 @@
 
 {% block content %}
 <article>
-<h1 class="title">
+<h1 class="page-title">
   {{ page.title }}
 </h1>
 
-<p class="blog-date">
-<strong><time datetime="{{ page.date }}">{{ page.date }}</time></strong> · {{ page.reading_time }} min read{% if page.taxonomies.categories %} · {% for category in page.taxonomies.categories %}<a class="category-link capitalize" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}"><i>{{ category }}</i></a>{% if not loop.last %} {% endif %}{% endfor %}{% endif %}
+<p class="post-meta-line">
+<time datetime="{{ page.date }}">{{ page.date }}</time> · {{ page.reading_time }} min read{% if page.taxonomies.categories %} · {% for category in page.taxonomies.categories %}<a class="capitalize" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
 </p>
 
 {% if page.toc %}
@@ -87,19 +87,24 @@
 {% endif %}
 </article>
 
-<p>{% include "partials/sponsor.html" %}</p>
+<p class="sponsor-row">{% include "partials/sponsor.html" %}</p>
 
+{# In a section sorted by date, `higher` is the older post and `lower` the newer one. #}
+{% if page.higher or page.lower %}
 <nav class="post-nav">
-  {% if page.earlier %}
+  {% if page.higher %}
   <div class="prev">
-    &larr; <a href="{{ page.earlier.permalink }}" data-umami-event="post-nav-prev">{{ page.earlier.title }}</a>
+    <span class="post-nav-label">Older</span>
+    <a href="{{ page.higher.permalink }}" data-umami-event="post-nav-prev">&larr; {{ page.higher.title }}</a>
   </div>
   {% endif %}
-  {% if page.later %}
+  {% if page.lower %}
   <div class="next">
-    <a href="{{ page.later.permalink }}" data-umami-event="post-nav-next">{{ page.later.title }}</a> &rarr;
+    <span class="post-nav-label">Newer</span>
+    <a href="{{ page.lower.permalink }}" data-umami-event="post-nav-next">{{ page.lower.title }} &rarr;</a>
   </div>
   {% endif %}
 </nav>
+{% endif %}
 
 {% endblock content %}
