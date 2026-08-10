@@ -2,30 +2,35 @@
   <title id="mm-title">What the frame allocator does with each limine memory map entry</title>
   <desc id="mm-desc">A physical memory map on the left, sorted low to high, with limine entry types. On the right, the bitmap after init: every bit starts at 1 and only the USABLE runs are cleared to 0, including the frames holding the bitmap itself, which stay at 1. The bitmap spans only the first to the last USABLE region, so the low page, the ACPI regions above it and the framebuffer fall outside it entirely.</desc>
   <style>
-    .hdr { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; }
-    .sub { fill: #E6E1CF; opacity: 0.55; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
-    .addr { fill: #E6E1CF; opacity: 0.6; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: end; }
-    .type { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
-    .size { fill: #E6E1CF; opacity: 0.55; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: end; }
-    .bits { fill: #E6E1CF; opacity: 0.75; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: middle; }
-    .bits-free { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: middle; }
-    .bits-self { fill: #7abec2; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 10px; text-anchor: middle; }
-    .note { fill: #E6E1CF; opacity: 0.55; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
-    .note-self { fill: #7abec2; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+    .memory-map text { font-family: var(--font-mono); fill: var(--fg); }
+    .memory-map .hdr { font-size: 13px; font-weight: 600; }
+    .memory-map .sub { font-size: 11px; opacity: 0.55; }
+    .memory-map .addr { font-size: 11px; opacity: 0.6; text-anchor: end; }
+    .memory-map .type { font-size: 11px; }
+    .memory-map .size { font-size: 11px; opacity: 0.55; text-anchor: end; }
+    .memory-map .bits { font-size: 11px; opacity: 0.75; text-anchor: middle; }
+    .memory-map .bits-free { font-size: 11px; text-anchor: middle; }
+    .memory-map .bits-self { font-size: 10px; fill: var(--cyan); text-anchor: middle; }
+    .memory-map .note { font-size: 11px; opacity: 0.55; }
+    .memory-map .note-self { font-size: 11px; fill: var(--cyan); }
+    .memory-map .dim { opacity: 0.6; }
+    .memory-map .self-label { font-size: 10px; fill: var(--cyan); }
 
-    .band-free { fill: #4d7577; fill-opacity: 0.28; stroke: #4d7577; stroke-width: 1.5; }
-    .band-alloc { fill: #0f1419; stroke: #4d7577; stroke-width: 1; stroke-opacity: 0.5; }
-    .band-self { fill: #7abec2; fill-opacity: 0.3; stroke: #7abec2; stroke-width: 1.5; }
-    .band-out { fill: #0f1419; stroke: #4d7577; stroke-width: 1; stroke-opacity: 0.35; stroke-dasharray: 3 3; }
+    .memory-map .band-free { fill: var(--accent); fill-opacity: 0.28; stroke: var(--accent); stroke-width: 1.5; }
+    .memory-map .band-alloc { fill: var(--panel); stroke: var(--accent); stroke-width: 1; stroke-opacity: 0.5; }
+    .memory-map .band-self { fill: var(--cyan); fill-opacity: 0.3; stroke: var(--cyan); stroke-width: 1.5; }
+    .memory-map .band-out { fill: var(--panel); stroke: var(--accent); stroke-width: 1; stroke-opacity: 0.35; stroke-dasharray: 3 3; }
 
-    .gap { fill: none; stroke: #4d7577; stroke-width: 1; stroke-opacity: 0.35; stroke-dasharray: 4 4; }
-    .brace { fill: none; stroke: #4d7577; stroke-width: 1.5; }
-    .arrow { fill: none; stroke: #4d7577; stroke-width: 1.5; }
+    .memory-map .gap { fill: none; stroke: var(--accent); stroke-width: 1; stroke-opacity: 0.35; stroke-dasharray: 4 4; }
+    .memory-map .brace { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+    .memory-map .brace-out { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-opacity: 0.4; }
+    .memory-map .arrow { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+    .memory-map .arrow-head { fill: var(--accent); }
   </style>
 
   <defs>
     <marker id="mm-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#4d7577"/>
+      <polygon class="arrow-head" points="0 0, 8 3, 0 6"/>
     </marker>
   </defs>
 
@@ -36,7 +41,7 @@
   <!-- 0x0000_0000 RESERVED, below the first USABLE region -->
   <text class="addr" x="112" y="66">0x0000_0000</text>
   <rect class="band-out" x="120" y="52" width="230" height="22"/>
-  <text class="type" x="128" y="67" opacity="0.6">RESERVED</text>
+  <text class="type dim" x="128" y="67">RESERVED</text>
   <text class="size" x="342" y="67">4 KiB</text>
 
   <!-- 0x0000_1000 USABLE -->
@@ -58,8 +63,8 @@
   <!-- 0x0010_0000 USABLE, holds the bitmap itself -->
   <text class="addr" x="112" y="140">0x0010_0000</text>
   <rect class="band-self" x="120" y="124" width="230" height="14"/>
-  <text class="type" x="128" y="135" fill="#7abec2" font-size="10">the bitmap itself</text>
-  <text class="size" x="342" y="135" fill="#7abec2" opacity="1" font-size="10">64 KiB</text>
+  <text class="self-label" x="128" y="135">the bitmap itself</text>
+  <text class="self-label" x="342" y="135" text-anchor="end">64 KiB</text>
   <text class="addr" x="112" y="158">0x0011_0000</text>
   <rect class="band-free" x="120" y="138" width="230" height="32"/>
   <text class="type" x="128" y="158">USABLE</text>
@@ -101,19 +106,19 @@
   <!-- 0x86F0_0000 ACPI_RECLAIMABLE, above the last USABLE region -->
   <text class="addr" x="112" y="270">0x86F0_0000</text>
   <rect class="band-out" x="120" y="254" width="230" height="22"/>
-  <text class="type" x="128" y="269" opacity="0.6">ACPI_RECLAIMABLE</text>
+  <text class="type dim" x="128" y="269">ACPI_RECLAIMABLE</text>
   <text class="size" x="342" y="269">128 KiB</text>
 
   <!-- 0x86F2_0000 ACPI_NVS -->
   <text class="addr" x="112" y="292">0x86F2_0000</text>
   <rect class="band-out" x="120" y="276" width="230" height="22"/>
-  <text class="type" x="128" y="291" opacity="0.6">ACPI_NVS</text>
+  <text class="type dim" x="128" y="291">ACPI_NVS</text>
   <text class="size" x="342" y="291">64 KiB</text>
 
   <!-- 0x86F3_0000 MAPPED_RESERVED -->
   <text class="addr" x="112" y="316">0x86F3_0000</text>
   <rect class="band-out" x="120" y="298" width="230" height="24"/>
-  <text class="type" x="128" y="314" opacity="0.6">MAPPED_RESERVED</text>
+  <text class="type dim" x="128" y="314">MAPPED_RESERVED</text>
   <text class="size" x="342" y="314">1 MiB</text>
 
   <!-- hole -->
@@ -123,7 +128,7 @@
   <!-- 0xFD00_0000 FRAMEBUFFER -->
   <text class="addr" x="112" y="372">0xFD00_0000</text>
   <rect class="band-out" x="120" y="356" width="230" height="24"/>
-  <text class="type" x="128" y="372" opacity="0.6">FRAMEBUFFER</text>
+  <text class="type dim" x="128" y="372">FRAMEBUFFER</text>
   <text class="size" x="342" y="372">8 MiB</text>
 
   <!-- brace over the bitmap's span, plus the arrow into the bitmap column -->
@@ -135,7 +140,7 @@
   <!-- outside the bitmap -->
   <text class="note" x="576" y="290">outside the</text>
   <text class="note" x="576" y="304">bitmap span</text>
-  <path class="brace" d="M566 254 L572 254 L572 380 L566 380" stroke-opacity="0.4"/>
+  <path class="brace-out" d="M566 254 L572 254 L572 380 L566 380"/>
 
   <!-- legend -->
   <rect class="band-free" x="120" y="410" width="16" height="12"/>
