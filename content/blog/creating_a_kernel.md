@@ -165,7 +165,7 @@ I moved most of the main.rs code to a `boot.rs` file, where I'll have most limin
 
 I did this because it's good to separate the boot logic from the actual kernel logic. The boot stuff is pretty specific to limine and getting everything set up, while main.rs should focus on the actual kernel functionality. Makes things cleaner and easier to understand.
 
-Also created a BootInfo struct alongside a global static `BOOT_INFO` to access it easily.
+Also created a BootInfo struct alongside a global static `BOOT_INFO` to access it easily. The framebuffer can't go in there as limine hands it to us, because `Framebuffer` holds a raw pointer and so isn't `Sync`; we copy out the parts we need into our own struct and vouch for it.
 
 
 ```rust
@@ -191,9 +191,24 @@ static _START_MARKER: RequestsStartMarker = RequestsStartMarker::new();
 #[unsafe(link_section = ".requests_end_marker")]
 static _END_MARKER: RequestsEndMarker = RequestsEndMarker::new();
 
+/// The framebuffer's raw parts. Limine's `Framebuffer` holds a raw pointer, so
+/// it is neither `Send` nor `Sync` and can't live in a static on its own.
+#[expect(unused)]
+pub struct BootFramebuffer {
+    pub addr: *mut u32,
+    pub width: u64,
+    pub height: u64,
+    pub pitch: u64,
+}
+
+// SAFETY: the framebuffer is a fixed MMIO region that limine reports once and
+// never moves, and we only ever hand out raw pointers to it.
+unsafe impl Send for BootFramebuffer {}
+unsafe impl Sync for BootFramebuffer {}
+
 #[expect(unused)]
 pub struct BootInfo {
-    pub framebuffer: Framebuffer<'static>,
+    pub framebuffer: BootFramebuffer,
 }
 
 pub static BOOT_INFO: Once<BootInfo> = Once::new();
@@ -208,12 +223,19 @@ unsafe extern "C" fn kmain() -> ! {
     // removed by the linker.
     assert!(BASE_REVISION.is_supported());
 
-    let framebuffer = FRAMEBUFFER_REQUEST
-        .get_response()
+    let fb = FRAMEBUFFER_REQUEST
+        .response()
         .expect("need a framebuffer")
         .framebuffers()
-        .next()
+        .first()
         .expect("need a framebuffer");
+
+    let framebuffer = BootFramebuffer {
+        addr: fb.address() as *mut u32,
+        width: fb.width,
+        height: fb.height,
+        pitch: fb.pitch,
+    };
 
     let boot_info = BootInfo {
         framebuffer,
@@ -251,9 +273,12 @@ fn rust_panic(info: &core::panic::PanicInfo) -> ! {
 The `hlt` instruction is better than just doing `loop {}` because it actually puts the CPU to sleep until an interrupt happens, which saves power and doesn't waste CPU cycles.
 
 ```toml
-spin = "0.10.0"
-x86_64 = "0.15.2"
+limine = "0.6"
+spin = "0.12"
+x86_64 = "0.15.5"
 ```
+
+The `limine` crate needs a nightly toolchain (it uses `ptr_metadata`), and `x86_64` has to be at least 0.15.5, since older versions don't compile against the current nightly's `Step` trait.
 
 ## What's next?
 

@@ -18,7 +18,7 @@ Some regions of memory may be reserved by the bootloader, ACPI, or simply bad me
 
 We will also need the higher half mapping provided by limine. Limine maps for us all the **usable** physical memory starting at a given "virtual address" which we will call the physical memory offset, this is needed so we can access the level 4 page table. It also gives us an easy way to directly convert a physical address to virtual by simply adding the physical memory offset provided to us.
 
-This information can be provided by limine, by adding a `MemoryMapRequest` and a `HhdmRequest` to `boot.rs`. The entry types you can get back are listed in the [memory map feature](https://github.com/limine-bootloader/limine-protocol/blob/trunk/PROTOCOL.md#memory-map-feature) of the boot protocol:
+This information can be provided by limine, by adding a `MemmapRequest` and a `HhdmRequest` to `boot.rs`. The entry types you can get back are listed in the [memory map feature](https://github.com/limine-bootloader/limine-protocol/blob/trunk/PROTOCOL.md#memory-map-feature) of the boot protocol:
 
 ```rust
 
@@ -26,7 +26,7 @@ This information can be provided by limine, by adding a `MemoryMapRequest` and a
 
 #[used]
 #[unsafe(link_section = ".requests")]
-pub static MEMORY_MAP_REQUEST: MemoryMapRequest = MemoryMapRequest::new();
+pub static MEMORY_MAP_REQUEST: MemmapRequest = MemmapRequest::new();
 
 // Request the higher-half direct mapping
 #[used]
@@ -38,7 +38,7 @@ pub static HHDM_REQUEST: HhdmRequest = HhdmRequest::new();
 #[expect(unused)]
 pub struct BootInfo {
     pub framebuffer: Framebuffer<'static>,
-    pub memory_map: &'static MemoryMapResponse,
+    pub memory_map: &'static MemmapResponse,
     pub physical_memory_offset: VirtAddr,
 }
 
@@ -48,13 +48,15 @@ unsafe extern "C" fn kmain() -> ! {
 
     // get the response
     let memory_map = MEMORY_MAP_REQUEST
-        .get_response()
+        .response()
         .expect("need the memory map");
 
-    let physical_memory_offset = HHDM_REQUEST
-    .get_response()
-    .expect("need higher half mapping")
-    .offset();
+    let physical_memory_offset = VirtAddr::new(
+        HHDM_REQUEST
+            .response()
+            .expect("need higher half mapping")
+            .offset,
+    );
 
     let boot_info = BootInfo {
         framebuffer,
@@ -109,19 +111,19 @@ place the bitmap storage.
 We can't use a fixed size bitmap because the memory map may have different sizes depending on the host total memory.
 
 ```rust
-use limine::{memory_map::EntryType, response::MemoryMapResponse};
+use limine::{memmap, request::MemmapResponse};
 use x86_64::{
     PhysAddr,
     structures::paging::{FrameAllocator, PhysFrame, Size4KiB},
 };
-use crate::{memory::get_virt_addr, serial_println};
+use crate::memory::get_virt_addr;
 
 /// Calculate the range of frames managed by this allocator. Tracking the minimum usable address and the maximum.
 ///
 /// This range may include unusable frames, but the frame allocator will later mark them as unusable in the bitmap.
-fn calculate_frame_range(memory_regions: &MemoryMapResponse) -> (PhysFrame, usize) {
+fn calculate_frame_range(memory_regions: &MemmapResponse) -> (PhysFrame, usize) {
    let usable_regions = memory_regions.entries().iter()
-       .filter(|r| r.entry_type == EntryType::USABLE);
+       .filter(|r| r.type_ == memmap::MEMMAP_USABLE);
 
    let min_addr = usable_regions.clone().map(|r| r.base).min()
        .expect("No usable memory regions found");
@@ -134,21 +136,21 @@ fn calculate_frame_range(memory_regions: &MemoryMapResponse) -> (PhysFrame, usiz
    (start_frame, frame_count as usize)
 }
 
-pub fn calculate_bitmap_size(memory_regions: &MemoryMapResponse) -> usize {
+pub fn calculate_bitmap_size(memory_regions: &MemmapResponse) -> usize {
         let (_, frame_count) = calculate_frame_range(memory_regions);
         frame_count.div_ceil(8) // Round up to nearest byte
     }
 
 /// Find suitable memory for bitmap storage
 fn find_bitmap_storage(
-    memory_regions: &MemoryMapResponse,
+    memory_regions: &MemmapResponse,
     required_size: usize,
 ) -> Option<(&'static mut [u8], u64, usize)> {
     // First, create an iterator of usable entries.
     let usable_regions = memory_regions
         .entries()
         .iter()
-        .filter(|r| r.entry_type == EntryType::USABLE);
+        .filter(|r| r.type_ == memmap::MEMMAP_USABLE);
 
     // Map it to address ranges
     let mut addr_ranges = usable_regions.map(|r| r.base..(r.base + r.length));
@@ -222,7 +224,7 @@ impl BitmapFrameAllocator {
     /// * `memory_regions` - Available memory regions from bootloader
     /// * `bitmap_storage` - Pre-allocated storage for the bitmap
     pub fn new(
-        memory_regions: &'static MemoryMapResponse,
+        memory_regions: &'static MemmapResponse,
         bitmap_storage: &'static mut [u8],
     ) -> Self {
         let (start_frame, frame_count) = calculate_frame_range(memory_regions);
@@ -251,7 +253,7 @@ impl BitmapFrameAllocator {
     }
 
     /// Mark non-usable frames as allocated in the bitmap
-    fn mark_non_usable_frames(&mut self, memory_regions: &MemoryMapResponse) {
+    fn mark_non_usable_frames(&mut self, memory_regions: &MemmapResponse) {
         // First mark all frames as allocated
         for byte in self.bitmap.iter_mut() {
             *byte = 0xFF;
@@ -259,7 +261,7 @@ impl BitmapFrameAllocator {
 
         // Then mark usable regions as free
         for region in memory_regions.entries() {
-            if region.entry_type == EntryType::USABLE {
+            if region.type_ == memmap::MEMMAP_USABLE {
                 let start_frame = PhysFrame::containing_address(PhysAddr::new(region.base));
                 let end_frame =
                     PhysFrame::containing_address(PhysAddr::new(region.base + region.length - 1));
@@ -417,7 +419,7 @@ pub fn frame_allocator() -> MutexGuard<'static, BitmapFrameAllocator> {
 }
 
 /// Initialize the frame allocator using bootloader memory for bitmap storage
-pub fn init_frame_allocator(memory_regions: &'static MemoryMapResponse) {
+pub fn init_frame_allocator(memory_regions: &'static MemmapResponse) {
     // Calculate required bitmap size
     let required_size = calculate_bitmap_size(memory_regions);
 

@@ -1,147 +1,150 @@
-<svg viewBox="0 0 450 350" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 480" role="img" aria-labelledby="mm-title mm-desc" class="memory-map">
+  <title id="mm-title">What the frame allocator does with each limine memory map entry</title>
+  <desc id="mm-desc">A physical memory map on the left, sorted low to high, with limine entry types. On the right, the bitmap after init: every bit starts at 1 and only the USABLE runs are cleared to 0, including the frames holding the bitmap itself, which stay at 1. The bitmap spans only the first to the last USABLE region, so the low page, the ACPI regions above it and the framebuffer fall outside it entirely.</desc>
+  <style>
+    .hdr { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; }
+    .sub { fill: #E6E1CF; opacity: 0.55; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+    .addr { fill: #E6E1CF; opacity: 0.6; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: end; }
+    .type { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+    .size { fill: #E6E1CF; opacity: 0.55; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: end; }
+    .bits { fill: #E6E1CF; opacity: 0.75; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: middle; }
+    .bits-free { fill: #E6E1CF; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; text-anchor: middle; }
+    .bits-self { fill: #7abec2; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 10px; text-anchor: middle; }
+    .note { fill: #E6E1CF; opacity: 0.55; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+    .note-self { fill: #7abec2; font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace; font-size: 11px; }
+
+    .band-free { fill: #4d7577; fill-opacity: 0.28; stroke: #4d7577; stroke-width: 1.5; }
+    .band-alloc { fill: #0f1419; stroke: #4d7577; stroke-width: 1; stroke-opacity: 0.5; }
+    .band-self { fill: #7abec2; fill-opacity: 0.3; stroke: #7abec2; stroke-width: 1.5; }
+    .band-out { fill: #0f1419; stroke: #4d7577; stroke-width: 1; stroke-opacity: 0.35; stroke-dasharray: 3 3; }
+
+    .gap { fill: none; stroke: #4d7577; stroke-width: 1; stroke-opacity: 0.35; stroke-dasharray: 4 4; }
+    .brace { fill: none; stroke: #4d7577; stroke-width: 1.5; }
+    .arrow { fill: none; stroke: #4d7577; stroke-width: 1.5; }
+  </style>
+
   <defs>
-    <pattern id="bad_memory" patternUnits="userSpaceOnUse" width="4" height="4">
-      <rect width="4" height="4" fill="#ff1744"/>
-    </pattern>
-    <pattern id="reserved" patternUnits="userSpaceOnUse" width="6" height="6">
-      <rect width="6" height="6" fill="#f44336"/>
-    </pattern>
-    <pattern id="bootloader_reclaimable" patternUnits="userSpaceOnUse" width="4" height="4">
-      <rect width="4" height="4" fill="#9c27b0"/>
-    </pattern>
-    <pattern id="executable" patternUnits="userSpaceOnUse" width="5" height="5">
-      <rect width="5" height="5" fill="#3f51b5"/>
-    </pattern>
-  </defs>
-
-  <!-- Title -->
-  <text x="250" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="#e0e0e0">
-    Typical 1GB x86_64 Memory Map
-  </text>
-
-  <!-- Memory regions (realistic 1GB layout) -->
-  <!-- Region 1: Low memory - Real Mode IVT, BDA (unusable/reserved) -->
-  <rect x="40" y="40" width="110" height="20" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
-  <text x="45" y="48" font-size="8" fill="#fff" font-weight="bold">0x0000_0000</text>
-  <text x="45" y="56" font-size="8" fill="#fff" font-weight="bold">RESERVED</text>
-  <text x="155" y="48" font-size="8" fill="#bbb">640KB</text>
-
-  <!-- Region 2: VGA/BIOS area (reserved) -->
- <rect x="40" y="60" width="110" height="18" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
-  <text x="45" y="67" font-size="8" fill="#fff" font-weight="bold">0x000A_0000</text>
-  <text x="45" y="75" font-size="8" fill="#fff" font-weight="bold">RESERVED (VGA/BIOS)</text>
-  <text x="155" y="67" font-size="8" fill="#bbb">384KB</text>
-
-  <!-- Region 3: Extended BIOS area (reserved) -->
-  <rect x="40" y="78" width="110" height="15" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
-  <text x="45" y="84" font-size="8" fill="#fff" font-weight="bold">0x000F_0000</text>
-  <text x="45" y="91" font-size="8" fill="#fff" font-weight="bold">RESERVED</text>
-  <text x="155" y="84" font-size="8" fill="#bbb">64KB</text>
-
-  <!-- Region 4: Low usable memory -->
-  <rect x="40" y="93" width="110" height="20" fill="#4CAF50" stroke="#666" stroke-width="1"/>
-  <text x="45" y="101" font-size="8" fill="#fff" font-weight="bold">0x0010_0000</text>
-  <text x="45" y="109" font-size="8" fill="#fff" font-weight="bold">USABLE</text>
-  <text x="155" y="101" font-size="8" fill="#bbb">15MB</text>
-
-  <!-- Region 5: Kernel/modules -->
-  <rect x="40" y="113" width="110" height="25" fill="url(#executable)" stroke="#666" stroke-width="1"/>
-  <text x="45" y="123" font-size="8" fill="#fff" font-weight="bold">0x0100_0000</text>
-  <text x="45" y="133" font-size="8" fill="#fff" font-weight="bold">EXECUTABLE</text>
-  <text x="155" y="123" font-size="8" fill="#bbb">4MB</text>
-
-  <!-- Region 6: Bootloader data -->
-  <rect x="40" y="138" width="110" height="18" fill="url(#bootloader_reclaimable)" stroke="#666" stroke-width="1"/>
-  <text x="45" y="145" font-size="8" fill="#fff" font-weight="bold">0x0140_0000</text>
-  <text x="45" y="153" font-size="8" fill="#fff" font-weight="bold">BOOTLOADER</text>
-  <text x="155" y="145" font-size="8" fill="#bbb">1MB</text>
-
-  <!-- Region 7: Main RAM (largest usable region) -->
-  <rect x="40" y="156" width="110" height="80" fill="#4CAF50" stroke="#666" stroke-width="1"/>
-  <text x="45" y="168" font-size="8" fill="#fff" font-weight="bold">0x0150_0000</text>
-  <text x="45" y="178" font-size="8" fill="#fff" font-weight="bold">USABLE</text>
-  <text x="155" y="168" font-size="8" fill="#bbb">980MB</text>
-
-  <!-- Region 8: ACPI tables -->
-  <rect x="40" y="236" width="110" height="18" fill="#FF9800" stroke="#666" stroke-width="1"/>
-  <text x="45" y="243" font-size="8" fill="#fff" font-weight="bold">0x3F00_0000</text>
-  <text x="45" y="251" font-size="8" fill="#fff" font-weight="bold">ACPI_RECLAIM</text>
-  <text x="155" y="243" font-size="8" fill="#bbb">128KB</text>
-
-  <!-- Region 9: ACPI NVS -->
-  <rect x="40" y="254" width="110" height="15" fill="#795548" stroke="#666" stroke-width="1"/>
-  <text x="45" y="260" font-size="8" fill="#fff" font-weight="bold">0x3F02_0000</text>
-  <text x="45" y="267" font-size="8" fill="#fff" font-weight="bold">ACPI_NVS</text>
-  <text x="155" y="260" font-size="8" fill="#bbb">64KB</text>
-
-  <!-- Region 10: Framebuffer -->
-  <rect x="40" y="269" width="110" height="20" fill="#FF5722" stroke="#666" stroke-width="1"/>
-  <text x="45" y="277" font-size="8" fill="#fff" font-weight="bold">0x3F03_0000</text>
-  <text x="45" y="285" font-size="8" fill="#fff" font-weight="bold">FRAMEBUFFER</text>
-  <text x="155" y="277" font-size="8" fill="#bbb">8MB</text>
-
-  <!-- Region 11: High reserved (chipset, etc.) -->
-  <rect x="40" y="289" width="110" height="25" fill="url(#reserved)" stroke="#666" stroke-width="1"/>
-  <text x="45" y="299" font-size="8" fill="#fff" font-weight="bold">0x3F80_0000</text>
-  <text x="45" y="309" font-size="8" fill="#fff" font-weight="bold">RESERVED</text>
-  <text x="155" y="299" font-size="8" fill="#bbb">8MB</text>
-
-  <!-- Arrow pointing up -->
-  <path d="M25 305 L25 50" stroke="#999" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#999"/>
+    <marker id="mm-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#4d7577"/>
     </marker>
   </defs>
-  <text x="10" y="180" font-size="10" fill="#999" transform="rotate(-90, 10, 180)">Physical Memory</text>
 
-  <!-- Legend -->
-  <g transform="translate(200, 50)">
-    <text x="0" y="0" font-size="12" font-weight="bold" fill="#e0e0e0">Limine EntryType Values</text>
+  <text class="hdr" x="120" y="22">limine memory map</text>
+  <text class="hdr" x="440" y="22">bitmap after init</text>
+  <text class="sub" x="440" y="36">0xFF everywhere, then clear USABLE</text>
 
-    <rect x="0" y="15" width="12" height="10" fill="#4CAF50" stroke="#666"/>
-    <text x="17" y="23" font-size="10" fill="#e0e0e0">USABLE (0) - Available for allocation</text>
+  <!-- 0x0000_0000 RESERVED, below the first USABLE region -->
+  <text class="addr" x="112" y="66">0x0000_0000</text>
+  <rect class="band-out" x="120" y="52" width="230" height="22"/>
+  <text class="type" x="128" y="67" opacity="0.6">RESERVED</text>
+  <text class="size" x="342" y="67">4 KiB</text>
 
-    <rect x="0" y="28" width="12" height="10" fill="url(#reserved)" stroke="#666"/>
-    <text x="17" y="36" font-size="10" fill="#e0e0e0">RESERVED (1) - Permanently reserved</text>
+  <!-- 0x0000_1000 USABLE -->
+  <text class="addr" x="112" y="90">0x0000_1000</text>
+  <rect class="band-free" x="120" y="74" width="230" height="26"/>
+  <text class="type" x="128" y="91">USABLE</text>
+  <text class="size" x="342" y="91">636 KiB</text>
+  <rect class="band-free" x="440" y="74" width="120" height="26"/>
+  <text class="bits-free" x="500" y="91">0 0 0 0 0 0</text>
 
-    <rect x="0" y="41" width="12" height="10" fill="#FF9800" stroke="#666"/>
-    <text x="17" y="49" font-size="10" fill="#e0e0e0">ACPI_RECLAIMABLE (2) - Can free after ACPI init</text>
+  <!-- 0x0009_F000 RESERVED -->
+  <text class="addr" x="112" y="116">0x0009_F000</text>
+  <rect class="band-alloc" x="120" y="100" width="230" height="24"/>
+  <text class="type" x="128" y="116">RESERVED (VGA, BIOS)</text>
+  <text class="size" x="342" y="116">388 KiB</text>
+  <rect class="band-alloc" x="440" y="100" width="120" height="24"/>
+  <text class="bits" x="500" y="116">1 1 1 1 1 1</text>
 
-    <rect x="0" y="54" width="12" height="10" fill="#795548" stroke="#666"/>
-    <text x="17" y="62" font-size="10" fill="#e0e0e0">ACPI_NVS (3) - ACPI Non-Volatile Storage</text>
+  <!-- 0x0010_0000 USABLE, holds the bitmap itself -->
+  <text class="addr" x="112" y="140">0x0010_0000</text>
+  <rect class="band-self" x="120" y="124" width="230" height="14"/>
+  <text class="type" x="128" y="135" fill="#7abec2" font-size="10">the bitmap itself</text>
+  <text class="size" x="342" y="135" fill="#7abec2" opacity="1" font-size="10">64 KiB</text>
+  <text class="addr" x="112" y="158">0x0011_0000</text>
+  <rect class="band-free" x="120" y="138" width="230" height="32"/>
+  <text class="type" x="128" y="158">USABLE</text>
+  <text class="size" x="342" y="158">1.9 GiB</text>
 
-    <rect x="0" y="67" width="12" height="10" fill="url(#bad_memory)" stroke="#666"/>
-    <text x="17" y="75" font-size="10" fill="#e0e0e0">BAD_MEMORY (4) - Unusable due to damage</text>
+  <rect class="band-self" x="440" y="124" width="120" height="14"/>
+  <text class="bits-self" x="500" y="135">1 1 1 1</text>
+  <rect class="band-free" x="440" y="138" width="120" height="32"/>
+  <text class="bits-free" x="500" y="158">0 0 0 0 0 0</text>
 
-    <rect x="0" y="80" width="12" height="10" fill="url(#bootloader_reclaimable)" stroke="#666"/>
-    <text x="17" y="88" font-size="10" fill="#e0e0e0">BOOTLOADER_RECLAIMABLE (5) - Free after boot</text>
+  <text class="note-self" x="576" y="132">its own frames</text>
+  <text class="note-self" x="576" y="146">are marked</text>
+  <text class="note-self" x="576" y="160">allocated</text>
 
-    <rect x="0" y="93" width="12" height="10" fill="url(#executable)" stroke="#666"/>
-    <text x="17" y="101" font-size="10" fill="#e0e0e0">EXECUTABLE_AND_MODULES (6) - Kernel/modules</text>
+  <!-- 0x7EE0_0000 BOOTLOADER_RECLAIMABLE -->
+  <text class="addr" x="112" y="186">0x7EE0_0000</text>
+  <rect class="band-alloc" x="120" y="170" width="230" height="24"/>
+  <text class="type" x="128" y="186">BOOTLOADER_RECLAIMABLE</text>
+  <text class="size" x="342" y="186">2 MiB</text>
+  <rect class="band-alloc" x="440" y="170" width="120" height="24"/>
+  <text class="bits" x="500" y="186">1 1 1 1 1 1</text>
 
-    <rect x="0" y="106" width="12" height="10" fill="#FF5722" stroke="#666"/>
-    <text x="17" y="114" font-size="10" fill="#e0e0e0">FRAMEBUFFER (7) - Graphics memory</text>
-  </g>
+  <!-- 0x7F00_0000 EXECUTABLE_AND_MODULES -->
+  <text class="addr" x="112" y="212">0x7F00_0000</text>
+  <rect class="band-alloc" x="120" y="194" width="230" height="26"/>
+  <text class="type" x="128" y="211">EXECUTABLE_AND_MODULES</text>
+  <text class="size" x="342" y="211">16 MiB</text>
+  <rect class="band-alloc" x="440" y="194" width="120" height="26"/>
+  <text class="bits" x="500" y="211">1 1 1 1 1 1</text>
 
-  <!-- Frame allocator guidance -->
-  <g transform="translate(200, 180)">
-    <text x="0" y="0" font-size="12" font-weight="bold" fill="#e0e0e0">Frame Allocator Strategy</text>
+  <!-- 0x8000_0000 USABLE -->
+  <text class="addr" x="112" y="240">0x8000_0000</text>
+  <rect class="band-free" x="120" y="220" width="230" height="34"/>
+  <text class="type" x="128" y="241">USABLE</text>
+  <text class="size" x="342" y="241">112 MiB</text>
+  <rect class="band-free" x="440" y="220" width="120" height="34"/>
+  <text class="bits-free" x="500" y="241">0 0 0 0 0 0</text>
 
-    <text x="0" y="18" font-size="10" fill="#e0e0e0" font-weight="bold">Immediately Usable:</text>
-    <text x="0" y="30" font-size="9" fill="#bbb">• USABLE (0) - Primary allocation source (~995MB)</text>
+  <!-- 0x86F0_0000 ACPI_RECLAIMABLE, above the last USABLE region -->
+  <text class="addr" x="112" y="270">0x86F0_0000</text>
+  <rect class="band-out" x="120" y="254" width="230" height="22"/>
+  <text class="type" x="128" y="269" opacity="0.6">ACPI_RECLAIMABLE</text>
+  <text class="size" x="342" y="269">128 KiB</text>
 
-    <text x="0" y="48" font-size="10" fill="#e0e0e0" font-weight="bold">Can Be Reclaimed Later:</text>
-    <text x="0" y="60" font-size="9" fill="#bbb">• ACPI_RECLAIMABLE (2) - After ACPI init (~128KB)</text>
-    <text x="0" y="72" font-size="9" fill="#bbb">• BOOTLOADER_RECLAIMABLE (5) - After boot complete (~1MB)</text>
+  <!-- 0x86F2_0000 ACPI_NVS -->
+  <text class="addr" x="112" y="292">0x86F2_0000</text>
+  <rect class="band-out" x="120" y="276" width="230" height="22"/>
+  <text class="type" x="128" y="291" opacity="0.6">ACPI_NVS</text>
+  <text class="size" x="342" y="291">64 KiB</text>
 
-    <text x="0" y="90" font-size="10" fill="#e0e0e0" font-weight="bold">Never Use:</text>
-    <text x="0" y="102" font-size="9" fill="#bbb">• RESERVED (1) - Hardware/firmware (~8.4MB)</text>
-    <text x="0" y="114" font-size="9" fill="#bbb">• ACPI_NVS (3) - ACPI permanent (~64KB)</text>
-    <text x="0" y="126" font-size="9" fill="#bbb">• BAD_MEMORY (4) - Physical damage (~640KB)</text>
-    <text x="0" y="138" font-size="9" fill="#bbb">• EXECUTABLE_AND_MODULES (6) - Kernel code (~4MB)</text>
-    <text x="0" y="150" font-size="9" fill="#bbb">• FRAMEBUFFER (7) - Graphics memory (~8MB)</text>
+  <!-- 0x86F3_0000 MAPPED_RESERVED -->
+  <text class="addr" x="112" y="316">0x86F3_0000</text>
+  <rect class="band-out" x="120" y="298" width="230" height="24"/>
+  <text class="type" x="128" y="314" opacity="0.6">MAPPED_RESERVED</text>
+  <text class="size" x="342" y="314">1 MiB</text>
 
-    <text x="0" y="170" font-size="10" fill="#4CAF50" font-weight="bold">Total Available: ~996MB for the kernel</text>
-  </g>
+  <!-- hole -->
+  <line class="gap" x1="120" y1="334" x2="350" y2="334"/>
+  <text class="note" x="128" y="345">no RAM here</text>
+
+  <!-- 0xFD00_0000 FRAMEBUFFER -->
+  <text class="addr" x="112" y="372">0xFD00_0000</text>
+  <rect class="band-out" x="120" y="356" width="230" height="24"/>
+  <text class="type" x="128" y="372" opacity="0.6">FRAMEBUFFER</text>
+  <text class="size" x="342" y="372">8 MiB</text>
+
+  <!-- brace over the bitmap's span, plus the arrow into the bitmap column -->
+  <path class="brace" d="M362 74 L356 74 L356 254 L362 254"/>
+  <path class="arrow" d="M356 164 L432 164" marker-end="url(#mm-arrow)"/>
+  <text class="sub" x="576" y="212">one bit per</text>
+  <text class="sub" x="576" y="226">4 KiB frame</text>
+
+  <!-- outside the bitmap -->
+  <text class="note" x="576" y="290">outside the</text>
+  <text class="note" x="576" y="304">bitmap span</text>
+  <path class="brace" d="M566 254 L572 254 L572 380 L566 380" stroke-opacity="0.4"/>
+
+  <!-- legend -->
+  <rect class="band-free" x="120" y="410" width="16" height="12"/>
+  <text class="note" x="144" y="420">free, bit is 0</text>
+  <rect class="band-alloc" x="252" y="410" width="16" height="12"/>
+  <text class="note" x="276" y="420">allocated, bit is 1</text>
+  <rect class="band-out" x="416" y="410" width="16" height="12"/>
+  <text class="note" x="440" y="420">no bit at all</text>
+
+  <text class="note" x="120" y="446">The bitmap spans the first USABLE frame to the last. Anything outside that span</text>
+  <text class="note" x="120" y="462">has no bit: frame_to_index returns None, and is_frame_allocated treats it as taken.</text>
 </svg>
