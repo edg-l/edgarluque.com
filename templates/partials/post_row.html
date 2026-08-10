@@ -1,5 +1,5 @@
 <li class="post-row">
-  <time class="post-date" datetime="{{ page.date }}">{{ page.date }}</time>
+  <time class="post-date" datetime="{{ page.date }}">{{ page.date | date(format="%Y-%m-%d") }}</time>
   <a class="post-link" href="{{ page.permalink }}" title="{{ page.description }}">{{ page.title }}</a>
   <span class="post-meta">
     {#- On a category page the term is already the heading, so it is not repeated on every row. -#}

@@ -35,7 +35,7 @@
 </h1>
 
 <p class="post-meta-line">
-<time datetime="{{ page.date }}">{{ page.date }}</time> · {{ page.reading_time }} min read{% if page.taxonomies.categories %} · {% for category in page.taxonomies.categories %}<a class="capitalize" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
+<time datetime="{{ page.date }}">{{ page.date | date(format="%Y-%m-%d") }}</time> · {{ page.reading_time }} min read{% if page.taxonomies.categories %} · {% for category in page.taxonomies.categories %}<a class="capitalize" href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
 </p>
 
 {% if page.toc %}
@@ -68,6 +68,7 @@
     {% set_global series_pages = series_pages | concat(with=sp) %}
   {% endif %}
 {% endfor %}
+{% set_global series_pages = series_pages | sort(attribute="extra.series_part") %}
 {% if series_pages | length > 1 %}
 <aside class="series-nav">
   <div class="series-head">Series: <strong>{{ series_name }}</strong> ({{ series_pages | length }} parts)</div>
