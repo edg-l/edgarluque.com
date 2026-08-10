@@ -1,8 +1,7 @@
 +++
 title = "Creating an x86_64 kernel in Rust: Part 3"
 description = "Adding a frame allocator"
-date = 2025-08-30
-draft = true
+date = 2026-08-10T10:00:00Z
 [taxonomies]
 categories = ["rust", "kernel", "x86_64"]
 [extra]
@@ -12,14 +11,14 @@ series_part = 3
 
 Next we will add a frame allocator, needed to do proper memory mapping which will result in us having the ability to add a heap allocator for our kernel. Allowing us to use Rust's `alloc` crate, giving us access to `Vec` and more.
 
-To implement a frame allocator, need to get a memory map, this map gives us the information of what regions of memory are usable by the kernel.
+To implement a frame allocator, we need to get a memory map, this map gives us the information of what regions of memory are usable by the kernel.
 Some regions of memory may be reserved by the bootloader, ACPI, or simply bad memory due to hardware damage.
 
-![](/img/memory_map_diagram.svg)
+![Physical memory split into usable regions and regions reserved by the bootloader, ACPI and firmware](/img/memory_map_diagram.svg)
 
 We will also need the higher half mapping provided by limine. Limine maps for us all the **usable** physical memory starting at a given "virtual address" which we will call the physical memory offset, this is needed so we can access the level 4 page table. It also gives us an easy way to directly convert a physical address to virtual by simply adding the physical memory offset provided to us.
 
-This information can be provided by limine, by adding a `MemoryMapRequest` and a `HhdmRequest` to `boot.rs`:
+This information can be provided by limine, by adding a `MemoryMapRequest` and a `HhdmRequest` to `boot.rs`. The entry types you can get back are listed in the [memory map feature](https://github.com/limine-bootloader/limine-protocol/blob/trunk/PROTOCOL.md#memory-map-feature) of the boot protocol:
 
 ```rust
 
@@ -89,7 +88,7 @@ pub fn get_virt_addr(phys: PhysAddr) -> VirtAddr {
 }
 ```
 
-The allocator we will implement will be bitmap based. A bitmap allocator uses one bit per frame - 0 means the frame is free, 1 means it's allocated. This is simple and memory-efficient (just 1 bit per 4KB frame), though finding free frames requires a linear search which can be slow with lots of memory.
+The allocator we will implement will be bitmap based. A bitmap allocator uses one bit per frame: 0 means the frame is free, 1 means it's allocated. This is simple and memory-efficient (just 1 bit per 4KiB frame), though finding free frames requires a linear search which can be slow with lots of memory. The [OSDev wiki](https://wiki.osdev.org/Page_Frame_Allocation) has the faster alternatives if you outgrow it.
 
 ```rust
 /// Bitmap-based frame allocator
@@ -212,7 +211,7 @@ fn find_bitmap_storage(
 }
 ```
 
-With that in place, we can implement the frame allocator:
+With that in place, we can implement the frame allocator. The types come from the `x86_64` crate: [`PhysFrame`](https://docs.rs/x86_64/latest/x86_64/structures/paging/frame/struct.PhysFrame.html) is a physical frame of a given size, and [`FrameAllocator`](https://docs.rs/x86_64/latest/x86_64/structures/paging/trait.FrameAllocator.html) is the trait the page mapper will want from us later.
 
 ```rust
 impl BitmapFrameAllocator {
@@ -355,73 +354,6 @@ impl BitmapFrameAllocator {
         None
     }
 
-    /// Allocate contiguous frames, useful for some allocations like DMA regions.
-    ///
-    /// # Arguments
-    ///
-    /// * `count` - Number of contiguous frames needed
-    ///
-    /// # Returns
-    ///
-    /// Returns the first frame of the contiguous block, or None if not available
-    pub fn allocate_contiguous_frames(&mut self, count: usize) -> Option<PhysFrame> {
-        if count == 0 {
-            return None;
-        }
-
-        // For single frame, use regular allocation
-        if count == 1 {
-            return self.allocate_frame();
-        }
-
-        // Search for contiguous free frames
-        for start_idx in 0..=(self.frame_count.saturating_sub(count)) {
-            let mut all_free = true;
-
-            // Check if all frames in range are free
-            for offset in 0..count {
-                if self.is_frame_allocated(start_idx + offset) {
-                    all_free = false;
-                    break;
-                }
-            }
-
-            if all_free {
-                // Mark all frames as allocated
-                for offset in 0..count {
-                    self.set_frame_allocated(start_idx + offset);
-                }
-
-                // Update hint
-                self.next_free_hint = start_idx + count;
-
-                return self.index_to_frame(start_idx);
-            }
-        }
-
-        None
-    }
-
-    /// Deallocate contiguous frames
-    ///
-    /// # Arguments
-    ///
-    /// * `start_frame` - First frame of the contiguous block
-    /// * `count` - Number of frames to deallocate
-    ///
-    /// # Safety
-    ///
-    /// The frames must have been allocated by this allocator and not be in use
-    pub unsafe fn deallocate_contiguous_frames(&mut self, start_frame: PhysFrame, count: usize) {
-        if let Some(start_idx) = self.frame_to_index(start_frame) {
-            for offset in 0..count {
-                if start_idx + offset < self.frame_count {
-                    self.set_frame_free(start_idx + offset);
-                }
-            }
-        }
-    }
-
     /// Deallocate a single frame
     ///
     /// # Safety
@@ -435,11 +367,11 @@ impl BitmapFrameAllocator {
 
     /// Get allocator statistics
     pub fn stats(&self) -> FrameAllocatorStats {
-        let mut allocated_frames = 0;
-
-        for byte in self.bitmap.iter() {
-            allocated_frames += byte.count_ones() as usize;
-        }
+        // Only count real frames. The last byte of the bitmap can hold up to 7
+        // bits that don't map to any frame, and those stay set to 1 forever.
+        let allocated_frames = (0..self.frame_count)
+            .filter(|&index| self.is_frame_allocated(index))
+            .count();
 
         FrameAllocatorStats {
             total_frames: self.frame_count,
@@ -462,7 +394,6 @@ unsafe impl FrameAllocator<Size4KiB> for BitmapFrameAllocator {
 }
 
 
-#[expect(unused)]
 #[derive(Debug, Clone, Copy)]
 pub struct FrameAllocatorStats {
     pub total_frames: usize,
@@ -472,7 +403,7 @@ pub struct FrameAllocatorStats {
 
 ```
 
-Finally, add a global and a function to get our frame allocator:
+Finally, add a global and a function to get our frame allocator. Note that the bitmap lives inside the very memory it manages, so right after building the allocator we mark the frames holding it as allocated; otherwise it could hand out its own storage:
 
 ```rust
 use spin::{Mutex, MutexGuard, Once};
@@ -523,7 +454,7 @@ On the `main.rs` file, create an `init()` method:
 
 ```rust
 use x86_64::{instructions::hlt, structures::paging::FrameAllocator};
-use crate::memory::{frame_allocator::init_frame_allocator, frame_allocator::frame_allocator};
+use crate::memory::frame_allocator::{frame_allocator, init_frame_allocator};
 
 fn init() {
     let info = boot_info();
@@ -571,12 +502,12 @@ When you run the kernel now, you should see output like:
 
 ```
 Booting...
-Initializing frame allocator
+Initializing the frame allocator
 Init done
 Frame allocator stats:
   Total frames: 517606
-  Free frames: 512320
-  Allocated frames: 5286
+  Free frames: 512322
+  Allocated frames: 5284
 Successfully allocated frame at: PhysAddr(0x10000)
 Successfully deallocated frame
 ```
