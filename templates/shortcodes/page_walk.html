@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 276" role="img" aria-labelledby="pw-title pw-desc" class="page-walk">
+  <title id="pw-title">How the CPU turns a 48-bit virtual address into a physical one</title>
+  <desc id="pw-desc">A 64-bit virtual address splits into a sign extension, four 9-bit table indices and a 12-bit page offset. CR3 points at the level 4 table; each index selects an entry that points at the next table down, and the level 1 entry plus the offset give the physical address.</desc>
+  <style>
+    .page-walk { width: 100%; max-width: 760px; height: auto; margin-inline: auto; }
+    .page-walk text { font-family: var(--font-mono); fill: var(--fg); }
+    .page-walk .bits { font-size: 11px; text-anchor: middle; }
+    .page-walk .bitrange { font-size: 10px; opacity: 0.55; text-anchor: middle; }
+    .page-walk .tbl { font-size: 11px; text-anchor: middle; }
+    .page-walk .note { font-size: 11px; opacity: 0.55; }
+    .page-walk .cr3 { font-size: 11px; fill: var(--cyan); text-anchor: middle; }
+    .page-walk .off { font-size: 11px; fill: var(--cyan); text-anchor: middle; }
+
+    .page-walk .field { fill: var(--panel); stroke: var(--accent); stroke-width: 1; }
+    .page-walk .field-idx { fill: var(--accent); fill-opacity: 0.28; stroke: var(--accent); stroke-width: 1.5; }
+    .page-walk .field-off { fill: var(--cyan); fill-opacity: 0.3; stroke: var(--cyan); stroke-width: 1.5; }
+    .page-walk .box { fill: var(--panel); stroke: var(--accent); stroke-width: 1.5; }
+    .page-walk .box-cr3 { fill: var(--panel); stroke: var(--cyan); stroke-width: 1.5; }
+    .page-walk .box-out { fill: var(--cyan); fill-opacity: 0.3; stroke: var(--cyan); stroke-width: 1.5; }
+    .page-walk .link { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+    .page-walk .brace { fill: none; stroke: var(--accent); stroke-width: 1; stroke-opacity: 0.45; stroke-dasharray: 3 3; }
+    .page-walk .head { fill: var(--accent); }
+  </style>
+
+  <defs>
+    <marker id="pw-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon class="head" points="0 0, 8 3, 0 6"/>
+    </marker>
+  </defs>
+
+  <text class="note" x="20" y="24">a virtual address</text>
+
+  <!-- address fields -->
+  <rect class="field" x="20" y="34" width="120" height="26"/>
+  <text class="bits" x="80" y="51">sign extend</text>
+  <text class="bitrange" x="80" y="74">63:48</text>
+
+  <rect class="field-idx" x="140" y="34" width="96" height="26"/>
+  <text class="bits" x="188" y="51">L4 index</text>
+  <text class="bitrange" x="188" y="74">47:39</text>
+
+  <rect class="field-idx" x="236" y="34" width="96" height="26"/>
+  <text class="bits" x="284" y="51">L3 index</text>
+  <text class="bitrange" x="284" y="74">38:30</text>
+
+  <rect class="field-idx" x="332" y="34" width="96" height="26"/>
+  <text class="bits" x="380" y="51">L2 index</text>
+  <text class="bitrange" x="380" y="74">29:21</text>
+
+  <rect class="field-idx" x="428" y="34" width="96" height="26"/>
+  <text class="bits" x="476" y="51">L1 index</text>
+  <text class="bitrange" x="476" y="74">20:12</text>
+
+  <rect class="field-off" x="524" y="34" width="136" height="26"/>
+  <text class="off" x="592" y="51">page offset</text>
+  <text class="bitrange" x="592" y="74">11:0</text>
+
+  <!-- each index selects an entry in its table; started below the bit labels -->
+  <path class="link" d="M181 82 L181 112" marker-end="url(#pw-arrow)"/>
+  <path class="link" d="M277 82 L277 112" marker-end="url(#pw-arrow)"/>
+  <path class="link" d="M373 82 L373 112" marker-end="url(#pw-arrow)"/>
+  <path class="link" d="M469 82 L469 112" marker-end="url(#pw-arrow)"/>
+  <path class="link" d="M580 82 L580 112" marker-end="url(#pw-arrow)"/>
+
+  <!-- the walk, left to right -->
+  <rect class="box-cr3" x="20" y="118" width="96" height="34"/>
+  <text class="cr3" x="68" y="139">CR3</text>
+  <path class="link" d="M116 135 L133 135" marker-end="url(#pw-arrow)"/>
+
+  <rect class="box" x="140" y="118" width="82" height="34"/>
+  <text class="tbl" x="181" y="139">L4 table</text>
+  <path class="link" d="M222 135 L229 135" marker-end="url(#pw-arrow)"/>
+
+  <rect class="box" x="236" y="118" width="82" height="34"/>
+  <text class="tbl" x="277" y="139">L3 table</text>
+  <path class="link" d="M318 135 L325 135" marker-end="url(#pw-arrow)"/>
+
+  <rect class="box" x="332" y="118" width="82" height="34"/>
+  <text class="tbl" x="373" y="139">L2 table</text>
+  <path class="link" d="M414 135 L421 135" marker-end="url(#pw-arrow)"/>
+
+  <rect class="box" x="428" y="118" width="82" height="34"/>
+  <text class="tbl" x="469" y="139">L1 table</text>
+  <path class="link" d="M510 135 L517 135" marker-end="url(#pw-arrow)"/>
+
+  <rect class="box-out" x="524" y="118" width="122" height="34"/>
+  <text class="tbl" x="585" y="139">4 KiB frame</text>
+
+  <text class="note" x="20" y="174">CR3 is physical,</text>
+  <text class="note" x="20" y="188">so unreachable</text>
+  <text class="note" x="20" y="202">without the</text>
+  <text class="note" x="20" y="216">HHDM offset</text>
+
+  <!-- what map_to has to create -->
+  <path class="brace" d="M236 154 L236 162 L510 162 L510 154"/>
+  <path class="brace" d="M373 162 L373 170"/>
+  <text class="note" x="150" y="184">map_to allocates a frame for any of these three that</text>
+  <text class="note" x="150" y="198">doesn't exist yet, which is why it needs a frame allocator.</text>
+
+  <text class="note" x="150" y="228">Each entry holds the physical address of the next table</text>
+  <text class="note" x="150" y="242">down. Four loads to translate one address, which is what</text>
+  <text class="note" x="150" y="256">the TLB exists to avoid repeating.</text>
+</svg>
