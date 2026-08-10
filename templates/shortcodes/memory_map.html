@@ -2,6 +2,9 @@
   <title id="mm-title">What the frame allocator does with each limine memory map entry</title>
   <desc id="mm-desc">A physical memory map on the left, sorted low to high, with limine entry types. On the right, the bitmap after init: every bit starts at 1 and only the USABLE runs are cleared to 0, including the frames holding the bitmap itself, which stay at 1. The bitmap spans only the first to the last USABLE region, so the low page, the ACPI regions above it and the framebuffer fall outside it entirely.</desc>
   <style>
+    /* Cap at close to the viewBox width so the 11px labels land just under the
+       14px body text instead of being scaled up past it. */
+    .memory-map { width: 100%; max-width: 760px; height: auto; margin-inline: auto; }
     .memory-map text { font-family: var(--font-mono); fill: var(--fg); }
     .memory-map .hdr { font-size: 13px; font-weight: 600; }
     .memory-map .sub { font-size: 11px; opacity: 0.55; }
