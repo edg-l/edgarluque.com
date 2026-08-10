@@ -165,7 +165,7 @@ I moved most of the main.rs code to a `boot.rs` file, where I'll have most limin
 
 I did this because it's good to separate the boot logic from the actual kernel logic. The boot stuff is pretty specific to limine and getting everything set up, while main.rs should focus on the actual kernel functionality. Makes things cleaner and easier to understand.
 
-Also created a BootInfo struct alongside a global static `BOOT_INFO` to access it easily. The framebuffer can't go in there as limine hands it to us, because `Framebuffer` holds a raw pointer and so isn't `Sync`; we copy out the parts we need into our own struct and vouch for it.
+Also created a BootInfo struct alongside a global static `BOOT_INFO` to access it easily. The framebuffer can't go in there as limine hands it to us, because `Framebuffer` holds a raw pointer and so isn't `Sync`. We copy out the parts we need into our own struct and vouch for it.
 
 
 ```rust

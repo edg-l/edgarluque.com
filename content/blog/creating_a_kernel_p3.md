@@ -405,7 +405,7 @@ pub struct FrameAllocatorStats {
 
 ```
 
-Finally, add a global and a function to get our frame allocator. Note that the bitmap lives inside the very memory it manages, so right after building the allocator we mark the frames holding it as allocated; otherwise it could hand out its own storage:
+Finally, add a global and a function to get our frame allocator. Note that the bitmap lives inside the very memory it manages, so right after building the allocator we mark the frames holding it as allocated, otherwise it could hand out its own storage:
 
 ```rust
 use spin::{Mutex, MutexGuard, Once};
