@@ -28,7 +28,7 @@ First, let's add the dependency to our `Cargo.toml`:
 
 ```toml
 [dependencies]
-uart_16550 = "0.3.1"
+uart_16550 = "0.6.0"
 ```
 
 Let's create a file named `serial.rs`, where we will add a serial_println macro, so we can have nice debug output.
@@ -37,14 +37,16 @@ Let's create a file named `serial.rs`, where we will add a serial_println macro,
 use core::fmt::{self, Write};
 
 use spin::{Once, mutex::Mutex};
-use uart_16550::SerialPort;
+use uart_16550::{Config, Uart16550Tty, backend::PioBackend};
 
-static SERIAL_DBG: Once<Mutex<SerialPort>> = Once::new();
+static SERIAL_DBG: Once<Mutex<Uart16550Tty<PioBackend>>> = Once::new();
 
 pub fn init() {
     SERIAL_DBG.call_once(|| {
-        let mut port = unsafe { uart_16550::SerialPort::new(0x3F8) };
-        port.init();
+        // SAFETY: 0x3F8 is the standard COM1 base, and the kernel is its only
+        // user for the whole lifetime of the device.
+        let port = unsafe { Uart16550Tty::new_port(0x3F8, Config::default()) }
+            .expect("COM1 init failed");
         Mutex::new(port)
     });
 }
