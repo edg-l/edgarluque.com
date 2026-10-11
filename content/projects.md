@@ -5,6 +5,15 @@ template_page = "page.html"
 
 All my projects are hosted at [github.com/edg-l](https://github.com/edg-l) and [git.edgarluque.com](https://git.edgarluque.com/)
 
+## Driftwire
+
+A racing game with a track editor, written in Rust on Bevy. Drive, restart,
+beat your ghost, then build your own tracks and share them. It has replays,
+live online rooms, regional rankings and car liveries. Early access on Windows,
+Linux and macOS.
+
+[driftwire.dev](https://driftwire.dev/)
+
 ## EDOS
 
 A hobby operating system for x86_64, written from scratch in Rust. It boots on
