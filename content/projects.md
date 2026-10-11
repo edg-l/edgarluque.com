@@ -7,10 +7,7 @@ All my projects are hosted at [github.com/edg-l](https://github.com/edg-l) and [
 
 ## Driftwire
 
-A racing game with a track editor, written in Rust on Bevy. Drive, restart,
-beat your ghost, then build your own tracks and share them. It has replays,
-live online rooms, regional rankings and car liveries. Early access on Windows,
-Linux and macOS.
+A racing game with rankings, custom tracks and an advanced editor to create your own!
 
 [driftwire.dev](https://driftwire.dev/)
 
